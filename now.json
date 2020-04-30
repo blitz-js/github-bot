@@ -1,0 +1,10 @@
+{
+  "env": {
+    "APP_ID": "@probot-api-id",
+    "WEBHOOK_SECRET": "@probot-webhook-secret",
+    "PRIVATE_KEY": "@probot-private-key",
+    "LOG_LEVEL": "trace"
+  },
+  "builds": [{ "src": "src/vercel.ts", "use": "@now/node" }],
+  "routes": [{ "src": "/", "methods": ["POST"], "dest": "/src/vercel.ts" }]
+}
