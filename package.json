@@ -24,12 +24,8 @@
   "dependencies": {
     "@octokit/webhooks": "^7.4.0",
     "lodash": "^4.17.15",
-<<<<<<< Updated upstream
-    "probot": "^9.5.3"
-=======
     "probot": "^9.5.3",
     "probot-serverless-now": "^2.1.2"
->>>>>>> Stashed changes
   },
   "devDependencies": {
     "@types/jest": "^25.1.0",
