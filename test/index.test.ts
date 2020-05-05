@@ -7,11 +7,7 @@ import myProbotApp from "../src";
 import { Probot } from "probot";
 import fs from "fs";
 import path from "path";
-import {
-  TRIAGE_LABEL,
-  IN_PROGRESS_LABEL,
-  IN_REVIEW_LABEL,
-} from "../src/settings";
+import { IN_PROGRESS_LABEL, IN_REVIEW_LABEL } from "../src/settings";
 
 const nockGH = () => nock("https://api.github.com");
 
@@ -49,6 +45,23 @@ describe("My Probot app", () => {
     // Load our app into probot
     probot = new Probot({ id: 123, cert: mockCert });
     probot.load(myProbotApp);
+    nockGH()
+      .post("/app/installations/2/access_tokens")
+      .reply(200, { token: "test" });
+
+    // mock get project id
+    nockGH()
+      .get("/repos/dajinchu/gh-project-bot/projects")
+      .reply(200, [{ id: PROJ_ID }]);
+
+    // mock get columns
+    nockGH()
+      .get(`/projects/${PROJ_ID}/columns`)
+      .reply(200, [
+        { id: COL_ID_TRIAGE, name: "Triage" },
+        { id: COL_ID_ASSIGNED, name: "Assigned" },
+        { id: 3, name: "In Review" },
+      ]);
   });
 
   describe("issue.labeled / pull_request.labeled", () => {
@@ -72,26 +85,6 @@ describe("My Probot app", () => {
         },
       };
     }
-    beforeEach(() => {
-      nockGH()
-        .post("/app/installations/2/access_tokens")
-        .reply(200, { token: "test" });
-
-      // mock get project id
-      nockGH()
-        .get("/repos/dajinchu/gh-project-bot/projects")
-        .reply(200, [{ id: PROJ_ID }]);
-
-      // mock get columns
-      nockGH()
-        .get(`/projects/${PROJ_ID}/columns`)
-        .reply(200, [
-          { id: COL_ID_TRIAGE, name: "Triage" },
-          { id: COL_ID_ASSIGNED, name: "Assigned" },
-          { id: 3, name: "In Review" },
-        ]);
-    });
-
     it("add issue to project board when tagged", async (done) => {
       // Mock that the board is not yet on the project board
       nockGH()
@@ -225,22 +218,62 @@ describe("My Probot app", () => {
   });
 
   describe("issues.opened", () => {
-    it("adds the triage label when new issues are created", async (done) => {
+    beforeEach(() => {
+      // Mock that the card is not yet on the project board
       nockGH()
-        .post(
-          `/repos/dajinchu/gh-project-bot/issues/33/labels`,
-          (body: any) => {
-            expect(body).toMatchObject([TRIAGE_LABEL]);
-            done();
-            return true;
-          }
-        )
+        .post("/graphql")
+        .reply(200, {
+          data: {
+            repository: { issueOrPullRequest: { projectCards: { nodes: [] } } },
+          },
+        });
+    });
+    it("if already status labeled, sync to board", async (done) => {
+      // Test that card created in assigned column
+      nockGH()
+        .post(`/projects/columns/${COL_ID_ASSIGNED}/cards`, (body: any) => {
+          done(
+            expect(body).toMatchObject({
+              content_id: ISSUE_ID,
+              content_type: "Issue",
+            })
+          );
+          return true;
+        })
+        .reply(201);
+
+      probot.receive({
+        name: "issues",
+        payload: {
+          action: "opened",
+          issue: {
+            number: 33,
+            id: ISSUE_ID,
+            labels: [{ name: "status/assigned" }],
+          },
+          repository: REPO,
+        },
+      });
+    });
+
+    it("adds to triage column if no other labels", async (done) => {
+      // Test that card created in assigned column
+      nockGH()
+        .post(`/projects/columns/${COL_ID_TRIAGE}/cards`, (body: any) => {
+          done(
+            expect(body).toMatchObject({
+              content_id: ISSUE_ID,
+              content_type: "Issue",
+            })
+          );
+          return true;
+        })
         .reply(201);
       probot.receive({
         name: "issues",
         payload: {
           action: "opened",
-          issue: { number: 33 },
+          issue: { number: 33, id: ISSUE_ID, labels: [{ name: "kind/bug" }] },
           repository: REPO,
         },
       });
