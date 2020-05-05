@@ -5,9 +5,9 @@
   "description": "automate project board",
   "author": "dajinchu <dajinchu@gmail.com>",
   "license": "ISC",
-  "repository": "https://github.com/dajinchu/gh-project-bot.git",
-  "homepage": "https://github.com/dajinchu/gh-project-bot",
-  "bugs": "https://github.com/dajinchu/gh-project-bot/issues",
+  "repository": "https://github.com/blitz-js/bot-github",
+  "homepage": "https://github.com/blitz-js/bot-github",
+  "bugs": "https://github.com/blitz-js/bot-github/issues",
   "keywords": [
     "probot",
     "github",
