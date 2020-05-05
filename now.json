@@ -1,6 +1,6 @@
 {
   "env": {
-    "APP_ID": "@probot-api-id",
+    "APP_ID": "@probot-app-id",
     "WEBHOOK_SECRET": "@probot-webhook-secret",
     "PRIVATE_KEY": "@probot-private-key",
     "LOG_LEVEL": "trace"
