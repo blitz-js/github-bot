@@ -11,3 +11,9 @@ export const LABEL_TO_COLUMN: Record<string, string> = {
   [IN_REVIEW_LABEL]: "In Review",
   "status/done": "Done",
 };
+
+export const FILETYPE_TO_CONTRIB_TYPE: Array<Record<string, Array<string>>> = [
+  { docs: [".md", ".txt"] },
+  { test: [".test.js", ".test.ts"] },
+  { code: [".js", ".ts", ".jsx", ".tsx", ".json", ".sh"] },
+];
