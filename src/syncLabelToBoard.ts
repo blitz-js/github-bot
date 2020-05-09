@@ -117,7 +117,7 @@ export async function syncLabelToBoard({
       content_id: prOrIssue.id,
       content_type: isPR ? "PullRequest" : "Issue",
     });
-  } else if (card.column.databaseId !== destColumn.id) {
+  } else if (card.column === null || card.column.databaseId !== destColumn.id) {
     // move card only if not already in the right column
     await github.projects.moveCard({
       card_id: card.databaseId,
