@@ -4,6 +4,7 @@ export const IN_REVIEW_LABEL = "status/in-review";
 
 export const LABEL_TO_COLUMN: Record<string, string> = {
   "status/icebox": "Icebox",
+  "status/blocked": "Blocked",
   [TRIAGE_LABEL]: "Triage",
   "status/ready-to-work-on": "Ready to Work On",
   "status/assigned": "Assigned",
