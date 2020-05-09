@@ -5,6 +5,7 @@ import { addContributions } from "./add_contribution";
 export async function pull_requestOpened(context: Context) {
   const { payload, github } = context;
   const isDraft = payload.pull_request.draft;
+  context.log("functionpull_requestOpened -> isDraft", isDraft);
   await github.issues.addLabels({
     owner: payload.repository.owner.login,
     repo: payload.repository.name,
