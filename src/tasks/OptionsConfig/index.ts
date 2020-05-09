@@ -2,10 +2,13 @@ const ALL_CONTRIBUTORS_RC = ".all-contributorsrc";
 
 const { addContributorWithDetails } = require("all-contributors-cli");
 
-const { AllContributorBotError } = require("../utils/errors");
+import { AllContributorBotError } from "./../../utils/errors";
 
-class OptionsConfig {
-  constructor({ repository }) {
+export class OptionsConfig {
+  repository: any;
+  options: any;
+  originalOptionsSha: any;
+  constructor({ repository }: Record<any, any>) {
     this.repository = repository;
     this.options;
     this.originalOptionsSha;
@@ -96,10 +99,10 @@ class OptionsConfig {
     avatar_url,
     profile,
     context,
-  }) {
+  }: Record<any, any>) {
     const options = this.options;
 
-    function findOldContributions(username) {
+    function findOldContributions(username: string) {
       const contributors = options.contributors;
       for (let i = 0; i < contributors.length; i++) {
         if (contributors[i].login === username) {
@@ -114,11 +117,10 @@ class OptionsConfig {
       ? profile
       : `http://${profile}`;
 
-    const oldContributions = findOldContributions(login);
-    const newContributions = [
-      ...new Set([...oldContributions, ...contributions]),
-    ];
-    context.log.info("oldContributions", oldContributions);
+    const oldContributions: Array<string> = findOldContributions(login);
+    const newContributions = Array.from(
+      new Set([...oldContributions, ...contributions])
+    );
     const newContributorsList = await addContributorWithDetails({
       options,
       login,

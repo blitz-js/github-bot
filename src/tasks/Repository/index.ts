@@ -1,11 +1,18 @@
-const {
+import {
   AllContributorBotError,
   BranchNotFoundError,
   ResourceNotFoundError,
-} = require("../utils/errors");
+} from "../../utils/errors";
 
-class Repository {
-  constructor({ repo, owner, github, defaultBranch, log }) {
+export class Repository {
+  github: any;
+  repo: any;
+  owner: string;
+  defaultBranch: string;
+  baseBranch: string;
+  log: any;
+  skipCiString: string;
+  constructor({ repo, owner, github, defaultBranch, log }: Record<any, any>) {
     this.github = github;
     this.repo = repo;
     this.owner = owner;
@@ -19,11 +26,11 @@ class Repository {
     return `${this.owner}/${this.repo}`;
   }
 
-  setBaseBranch(branchName) {
+  setBaseBranch(branchName: string) {
     this.baseBranch = branchName;
   }
 
-  async getFile(filePath) {
+  async getFile(filePath: string) {
     try {
       // https://octokit.github.io/rest.js/#api-Repos-getContents
       const file = await this.github.repos.getContents({
@@ -48,7 +55,7 @@ class Repository {
     }
   }
 
-  async getMultipleFiles(filePathsArray) {
+  async getMultipleFiles(filePathsArray: Array<string>) {
     // TODO: can probably optimise this instead of sending a request per file
     const repository = this;
 
@@ -61,7 +68,7 @@ class Repository {
     });
 
     const getFilesMultipleList = await Promise.all(getFilesMultiple);
-    const multipleFilesByPath = {};
+    const multipleFilesByPath: any = {};
     getFilesMultipleList.forEach(({ filePath, content, sha }) => {
       multipleFilesByPath[filePath] = {
         content,
@@ -72,7 +79,7 @@ class Repository {
     return multipleFilesByPath;
   }
 
-  async getRef(branchName) {
+  async getRef(branchName: string) {
     try {
       const result = await this.github.git.getRef({
         owner: this.owner,
@@ -87,7 +94,7 @@ class Repository {
     }
   }
 
-  async createBranch(branchName) {
+  async createBranch(branchName: string) {
     const fromSha = await this.getRef(this.defaultBranch);
 
     // https://octokit.github.io/rest.js/#api-Git-createRef
@@ -99,7 +106,12 @@ class Repository {
     });
   }
 
-  async updateFile({ filePath, content, branchName, originalSha }) {
+  async updateFile({
+    filePath,
+    content,
+    branchName,
+    originalSha,
+  }: Record<any, any>) {
     const contentBinary = Buffer.from(content).toString("base64");
     //octokit.github.io/rest.js/#api-Repos-updateFile
     await this.github.repos.updateFile({
@@ -113,7 +125,7 @@ class Repository {
     });
   }
 
-  async createFile({ filePath, content, branchName }) {
+  async createFile({ filePath, content, branchName }: Record<any, any>) {
     const contentBinary = Buffer.from(content).toString("base64");
 
     //octokit.github.io/rest.js/#api-Repos-createFile
@@ -127,7 +139,12 @@ class Repository {
     });
   }
 
-  async createOrUpdateFile({ filePath, content, branchName, originalSha }) {
+  async createOrUpdateFile({
+    filePath,
+    content,
+    branchName,
+    originalSha,
+  }: Record<any, any>) {
     if (originalSha === undefined) {
       await this.createFile({ filePath, content, branchName });
     } else {
@@ -140,10 +157,10 @@ class Repository {
     }
   }
 
-  async createOrUpdateFiles({ filesByPath, branchName }) {
+  async createOrUpdateFiles({ filesByPath, branchName }: Record<any, any>) {
     const repository = this;
     const createOrUpdateFilesMultiple = Object.entries(filesByPath).map(
-      ([filePath, { content, originalSha }]) => {
+      ([filePath, { content, originalSha }]: Array<any>) => {
         return repository.createOrUpdateFile({
           filePath,
           content,
@@ -156,7 +173,7 @@ class Repository {
     await Promise.all(createOrUpdateFilesMultiple);
   }
 
-  async getPullRequestURL({ branchName }) {
+  async getPullRequestURL({ branchName }: Record<any, any>) {
     try {
       const results = await this.github.pulls.list({
         owner: this.owner,
@@ -174,7 +191,7 @@ class Repository {
     }
   }
 
-  async createPullRequest({ title, body, branchName }) {
+  async createPullRequest({ title, body, branchName }: Record<any, any>) {
     try {
       const result = await this.github.pulls.create({
         owner: this.owner,
@@ -206,7 +223,12 @@ class Repository {
     }
   }
 
-  async createPullRequestFromFiles({ title, body, filesByPath, branchName }) {
+  async createPullRequestFromFiles({
+    title,
+    body,
+    filesByPath,
+    branchName,
+  }: Record<any, any>) {
     const branchNameExists = branchName === this.baseBranch;
     if (!branchNameExists) {
       await this.createBranch(branchName);

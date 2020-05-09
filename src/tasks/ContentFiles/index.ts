@@ -3,10 +3,13 @@ const { initBadge, initContributorsList } = require("all-contributors-cli");
 
 const { AllContributorBotError } = require("../utils/errors");
 
-function modifyFiles({ contentFilesByPath, fileContentModifierFunction }) {
-  const newFilesByPath = {};
+function modifyFiles({
+  contentFilesByPath,
+  fileContentModifierFunction,
+}: Record<any, any>) {
+  const newFilesByPath: any = {};
   Object.entries(contentFilesByPath).forEach(
-    ([filePath, { content, sha, originalSha }]) => {
+    ([filePath, { content, sha, originalSha }]: Array<any>) => {
       const newFileContents = fileContentModifierFunction(content);
       newFilesByPath[filePath] = {
         content: newFileContents,
@@ -20,13 +23,15 @@ function modifyFiles({ contentFilesByPath, fileContentModifierFunction }) {
 /*
  *  Fetches, stores, generates, and updates the readme content files for the contributors list
  */
-class ContentFiles {
-  constructor({ repository }) {
+export class ContentFiles {
+  repository: any;
+  contentFilesByPath: any;
+  constructor({ repository }: Record<any, any>) {
     this.repository = repository;
     this.contentFilesByPath = null;
   }
 
-  async fetch(optionsConfig) {
+  async fetch(optionsConfig: any) {
     const options = optionsConfig.get();
     if (options.files.length > 15) {
       throw new AllContributorBotError(
@@ -41,7 +46,7 @@ class ContentFiles {
   init() {
     const newFilesByPath = modifyFiles({
       contentFilesByPath: this.contentFilesByPath,
-      fileContentModifierFunction: function (content) {
+      fileContentModifierFunction: function (content: any) {
         const contentWithBadge = initBadge(content);
         const contentWithList = initContributorsList(contentWithBadge);
         return contentWithList;
@@ -50,11 +55,11 @@ class ContentFiles {
     this.contentFilesByPath = newFilesByPath;
   }
 
-  generate(optionsConfig) {
+  generate(optionsConfig: any) {
     const options = optionsConfig.get();
     const newFilesByPath = modifyFiles({
       contentFilesByPath: this.contentFilesByPath,
-      fileContentModifierFunction: function (content) {
+      fileContentModifierFunction: function (content: any) {
         return generateContentFile(options, options.contributors, content);
       },
     });
