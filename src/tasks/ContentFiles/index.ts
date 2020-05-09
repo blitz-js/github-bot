@@ -1,7 +1,7 @@
 const { generate: generateContentFile } = require("all-contributors-cli");
 const { initBadge, initContributorsList } = require("all-contributors-cli");
 
-const { AllContributorBotError } = require("../utils/errors");
+import { AllContributorBotError } from '../../utils/errors'
 
 function modifyFiles({
   contentFilesByPath,
