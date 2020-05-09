@@ -1,12 +1,9 @@
 import { Context } from "probot";
-import { WebhookPayloadPullRequest } from "@octokit/webhooks";
 import { IN_PROGRESS_LABEL, IN_REVIEW_LABEL } from "./settings";
-
+import { addContributions } from "./add_contribution";
 // Move pull request around based on draft status
-export async function pull_requestOpened({
-  payload,
-  github,
-}: Context<WebhookPayloadPullRequest>) {
+export async function pull_requestOpened(context: Context) {
+  const { payload, github } = context;
   const isDraft = payload.pull_request.draft;
   await github.issues.addLabels({
     owner: payload.repository.owner.login,
@@ -14,4 +11,5 @@ export async function pull_requestOpened({
     issue_number: payload.pull_request.number,
     labels: [isDraft ? IN_PROGRESS_LABEL : IN_REVIEW_LABEL],
   });
+  await addContributions(context);
 }
