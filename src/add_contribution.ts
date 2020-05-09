@@ -5,7 +5,6 @@ import { getUserDetails } from "./utils/getUserDetails";
 import { FILETYPE_TO_CONTRIB_TYPE } from "./settings";
 import { BranchNotFoundError, ResourceNotFoundError } from "./utils/errors";
 import { Context } from "probot";
-import { WebhookPayloadPullRequest } from "@octokit/webhooks";
 
 async function processAddContributor({
   context,
