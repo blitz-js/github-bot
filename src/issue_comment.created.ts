@@ -15,7 +15,7 @@ export async function issue_commentCreated({
   payload,
   github,
 }: Context<WebhookPayloadIssueComment>) {
-  if (payload.comment.body === "blitz bot sync") {
+  if (payload.comment.body.trim() === "blitz bot sync") {
     const issuesToFix = await getIssuesToFix(
       github,
       payload.repository.full_name
@@ -33,7 +33,7 @@ ${issuesToFix.map((i) => "#" + i.number).join(", ")}
       issue_number: payload.issue.number,
       body: message,
     });
-  } else if (payload.comment.body === "blitz bot sync confirm") {
+  } else if (payload.comment.body.trim() === "blitz bot sync confirm") {
     const issuesToFix = await getIssuesToFix(
       github,
       payload.repository.full_name
