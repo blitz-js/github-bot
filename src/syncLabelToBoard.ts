@@ -3,10 +3,11 @@ import {
   WebhookPayloadIssuesIssue,
   PayloadRepository,
 } from "@octokit/webhooks";
-import { GitHubAPI } from "probot";
+import { GitHubAPI, Octokit } from "probot";
 import { LABEL_TO_COLUMN } from "./settings";
 
 type PRorIssue =
+  | Octokit.SearchIssuesAndPullRequestsResponseItemsItem
   | WebhookPayloadPullRequestPullRequest
   | WebhookPayloadIssuesIssue;
 
@@ -74,8 +75,8 @@ export async function syncLabelToBoard({
   const columnName = LABEL_TO_COLUMN[newLabel];
 
   // Get rid of other label(s) that start with status/
-  const otherLabels: string[] = prOrIssue.labels
-    .map((l) => l.name)
+  const otherLabels: string[] = (prOrIssue.labels as Array<{ name: string }>)
+    .map((l: { name: string }) => l.name)
     .filter((n) => n in LABEL_TO_COLUMN && n !== newLabel);
   await Promise.all(
     otherLabels.map((l) =>
