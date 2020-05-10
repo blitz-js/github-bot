@@ -23,7 +23,7 @@ export async function issue_commentCreated({
     // Plan
     const message: string =
       issuesToFix.length > 0
-        ? `Going to sync board with all open, no-project issues/PRs: 
+        ? `Going to add the following issues to the project board:
 ${issuesToFix.map((i) => "#" + i.number).join(", ")}
 \`blitz bot sync confirm\` to execute`
         : `All open issues are already on the project board.`;
