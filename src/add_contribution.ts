@@ -58,8 +58,10 @@ async function processAddContributor({
 
 async function setupRepository({ context, branchName }: Record<any, any>) {
   const defaultBranch = context.payload.repository.default_branch;
+  console.log("setupRepository ->");
   const repository = new Repository({
     ...context.repo(),
+    owner: context.payload.repository.owner.login,
     github: context.github,
     defaultBranch,
     log: context.log,
@@ -133,26 +135,36 @@ export async function probotProcessPR({
 
 export async function addContributions(context: Context) {
   const { payload, github } = context;
+  //console.log("addContributions -> payload", payload)
   const owner = payload.repository.owner.login;
   const repo = payload.repository.name;
-  const number = payload.number;
+  const pull_number = payload.number;
   const isBot = payload.pull_request.user.type === "Bot";
   const who = payload.pull_request.user.login;
   const isTargetDefaultBranch =
     payload.pull_request.head.repo.default_branch ===
     payload.pull_request.base.ref;
   const fileChanged = payload.pull_request.changed_files;
+  // console.log("addContributions ->", {
+  //   owner,
+  //   repo,
+  //   pull_number,
+  //   headers: { accept: "application/vnd.github.v3.diff" },
+  //   page: 0,
+  //   per_page: 100,
+  // });
   if (isBot || !isTargetDefaultBranch || fileChanged == 0) {
     return;
   }
   const files = await github.pulls.listFiles({
     owner,
     repo,
-    number,
+    pull_number,
     headers: { accept: "application/vnd.github.v3.diff" },
     page: 0,
     per_page: 100,
   });
+
   const contributions: Array<string> = [];
   for (const file of files.data) {
     FILETYPE_TO_CONTRIB_TYPE.map((fileTypeMapping) => {

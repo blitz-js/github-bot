@@ -139,5 +139,3 @@ export class OptionsConfig {
     return newOptions;
   }
 }
-
-module.exports = OptionsConfig;

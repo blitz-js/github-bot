@@ -13,6 +13,10 @@ export class Repository {
   log: any;
   skipCiString: string;
   constructor({ repo, owner, github, defaultBranch, log }: Record<any, any>) {
+    console.log(
+      "Repository -> constructor -> { repo, owner, github, defaultBranch, log }",
+      { owner, defaultBranch }
+    );
     this.github = github;
     this.repo = repo;
     this.owner = owner;
@@ -114,7 +118,7 @@ export class Repository {
   }: Record<any, any>) {
     const contentBinary = Buffer.from(content).toString("base64");
     //octokit.github.io/rest.js/#api-Repos-updateFile
-    await this.github.repos.updateFile({
+    await this.github.repos.createOrUpdateFile({
       owner: this.owner,
       repo: this.repo,
       path: filePath,
@@ -129,7 +133,7 @@ export class Repository {
     const contentBinary = Buffer.from(content).toString("base64");
 
     //octokit.github.io/rest.js/#api-Repos-createFile
-    await this.github.repos.createFile({
+    await this.github.repos.createOrUpdateFile({
       owner: this.owner,
       repo: this.repo,
       path: filePath,
@@ -246,5 +250,3 @@ export class Repository {
     });
   }
 }
-
-module.exports = Repository;

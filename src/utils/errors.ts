@@ -27,10 +27,3 @@ export class UserNotFoundError extends AllContributorBotError {
     this.name = this.constructor.name;
   }
 }
-
-module.exports = {
-  AllContributorBotError,
-  BranchNotFoundError,
-  ResourceNotFoundError,
-  UserNotFoundError,
-};

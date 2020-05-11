@@ -20,5 +20,3 @@ export async function getUserDetails({ github, username }: Record<any, any>) {
     profile: blog || html_url,
   };
 }
-
-module.exports = getUserDetails;

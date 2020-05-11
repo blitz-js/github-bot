@@ -1,7 +1,7 @@
 const { generate: generateContentFile } = require("all-contributors-cli");
 const { initBadge, initContributorsList } = require("all-contributors-cli");
 
-import { AllContributorBotError } from '../../utils/errors'
+import { AllContributorBotError } from "../../utils/errors";
 
 function modifyFiles({
   contentFilesByPath,
@@ -70,5 +70,3 @@ export class ContentFiles {
     return this.contentFilesByPath;
   }
 }
-
-module.exports = ContentFiles;
