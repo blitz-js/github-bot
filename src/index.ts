@@ -4,6 +4,7 @@ import { project_cardMoved } from "./project_card.moved";
 import { issuesOpened } from "./issues.opened";
 import { pull_requestOpened } from "./pull_request.opened";
 import { pull_requestLabeled } from "./pull_reqest.labeled";
+import { issue_commentCreated } from "./issue_comment.created";
 
 export = (app: Application) => {
   app.on("issues.opened", issuesOpened);
@@ -14,4 +15,6 @@ export = (app: Application) => {
     pull_requestOpened
   );
   app.on("pull_request.labeled", pull_requestLabeled);
+
+  app.on("issue_comment.created", issue_commentCreated);
 };
