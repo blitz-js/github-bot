@@ -24,7 +24,7 @@
   "dependencies": {
     "@octokit/webhooks": "^7.4.0",
     "all-contributors-cli": "^6.14.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "probot": "^9.5.3",
     "probot-serverless-now": "^2.1.2"
   },
