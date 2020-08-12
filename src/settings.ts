@@ -1,6 +1,7 @@
 export const TRIAGE_LABEL = "status/triage";
 export const IN_PROGRESS_LABEL = "status/in-progress";
 export const IN_REVIEW_LABEL = "status/in-review";
+export const ASSIGNED = "status/assigned"
 
 export const LABEL_TO_COLUMN: Record<string, string> = {
   "status/icebox": "Icebox",
