@@ -6,6 +6,7 @@ import { pull_requestOpened } from "./pull_request.opened";
 import { pull_requestLabeled } from "./pull_reqest.labeled";
 import { issue_commentCreated } from "./issue_comment.created";
 import { pull_requestClosed } from "./pull_request.closed";
+import { issuesAssigned } from "./issues.assigned";
 
 export = (app: Application) => {
   app.on("issues.opened", issuesOpened);
@@ -18,4 +19,5 @@ export = (app: Application) => {
   app.on("pull_request.labeled", pull_requestLabeled);
   app.on("pull_request.closed", pull_requestClosed);
   app.on("issue_comment.created", issue_commentCreated);
+  app.on("issues.assigned", issuesAssigned);
 };
