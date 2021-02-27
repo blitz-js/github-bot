@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "src/vercel.ts": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "rewitres": [
+    {
+      "source": "/webhook",
+      "destination": "/src/vercel.ts"
+    }
+  ]
+}
