@@ -1,23 +1,37 @@
+import { isArray } from "lodash";
 import {
   AllContributorBotError,
   BranchNotFoundError,
   ResourceNotFoundError,
 } from "../../utils/errors";
+import type { LogClient, OctokitClient } from "../../utils/types";
 
 export class Repository {
-  github: any;
-  repo: any;
+  octokit: OctokitClient;
+  repo: string;
   owner: string;
   defaultBranch: string;
   baseBranch: string;
-  log: any;
+  log: LogClient;
   skipCiString: string;
-  constructor({ repo, owner, github, defaultBranch, log }: Record<any, any>) {
+  constructor({
+    repo,
+    owner,
+    octokit,
+    defaultBranch,
+    log,
+  }: {
+    octokit: OctokitClient;
+    repo: string;
+    owner: string;
+    defaultBranch: string;
+    log: LogClient;
+  }) {
     console.log(
-      "Repository -> constructor -> { repo, owner, github, defaultBranch, log }",
+      "Repository -> constructor -> { repo, owner, octokit, defaultBranch, log }",
       { owner, defaultBranch }
     );
-    this.github = github;
+    this.octokit = octokit;
     this.repo = repo;
     this.owner = owner;
     this.defaultBranch = defaultBranch;
@@ -36,19 +50,25 @@ export class Repository {
 
   async getFile(filePath: string) {
     try {
-      // https://octokit.github.io/rest.js/#api-Repos-getContents
-      const file = await this.github.repos.getContents({
+      // https://octokit.github.io/rest.js/v18#repos-get-content
+      const { data: file } = await this.octokit.repos.getContent({
         owner: this.owner,
         repo: this.repo,
         path: filePath,
         ref: this.baseBranch,
       });
-      // Contents can be an array if its a directory, should be an edge case, and we can just crash
-      const contentBinary = file.data.content;
-      const content = Buffer.from(contentBinary, "base64").toString();
+
+      if (isArray(file) || !("content" in file)) {
+        throw new Error(
+          `"${filePath}" leads to something that isn't a file. Probably a directory`
+        );
+      }
+
+      const contentEncoded = file.content;
+      const content = Buffer.from(contentEncoded, "base64").toString();
       return {
         content,
-        sha: file.data.sha,
+        sha: file.sha,
       };
     } catch (error) {
       if (error.status === 404) {
@@ -72,7 +92,10 @@ export class Repository {
     });
 
     const getFilesMultipleList = await Promise.all(getFilesMultiple);
-    const multipleFilesByPath: any = {};
+    const multipleFilesByPath: Record<
+      string,
+      { content: string; sha: string }
+    > = {};
     getFilesMultipleList.forEach(({ filePath, content, sha }) => {
       multipleFilesByPath[filePath] = {
         content,
@@ -85,7 +108,7 @@ export class Repository {
 
   async getRef(branchName: string) {
     try {
-      const result = await this.github.git.getRef({
+      const result = await this.octokit.git.getRef({
         owner: this.owner,
         repo: this.repo,
         ref: `heads/${branchName}`,
@@ -101,45 +124,14 @@ export class Repository {
   async createBranch(branchName: string) {
     const fromSha = await this.getRef(this.defaultBranch);
 
-    // https://octokit.github.io/rest.js/#api-Git-createRef
-    await this.github.git.createRef({
+    if (!fromSha) throw new Error("Mising SHA");
+
+    // https://octokit.github.io/rest.js/v18#git-create-ref
+    await this.octokit.git.createRef({
       owner: this.owner,
       repo: this.repo,
       ref: `refs/heads/${branchName}`,
       sha: fromSha,
-    });
-  }
-
-  async updateFile({
-    filePath,
-    content,
-    branchName,
-    originalSha,
-  }: Record<any, any>) {
-    const contentBinary = Buffer.from(content).toString("base64");
-    //octokit.github.io/rest.js/#api-Repos-updateFile
-    await this.github.repos.createOrUpdateFile({
-      owner: this.owner,
-      repo: this.repo,
-      path: filePath,
-      message: `docs: update ${filePath} ${this.skipCiString}`,
-      content: contentBinary,
-      sha: originalSha,
-      branch: branchName,
-    });
-  }
-
-  async createFile({ filePath, content, branchName }: Record<any, any>) {
-    const contentBinary = Buffer.from(content).toString("base64");
-
-    //octokit.github.io/rest.js/#api-Repos-createFile
-    await this.github.repos.createOrUpdateFile({
-      owner: this.owner,
-      repo: this.repo,
-      path: filePath,
-      message: `docs: create ${filePath} ${this.skipCiString}`,
-      content: contentBinary,
-      branch: branchName,
     });
   }
 
@@ -148,17 +140,24 @@ export class Repository {
     content,
     branchName,
     originalSha,
-  }: Record<any, any>) {
-    if (originalSha === undefined) {
-      await this.createFile({ filePath, content, branchName });
-    } else {
-      await this.updateFile({
-        filePath,
-        content,
-        branchName,
-        originalSha,
-      });
-    }
+  }: {
+    filePath: string;
+    content: string;
+    branchName: string;
+    originalSha?: string;
+  }) {
+    const contentEncoded = Buffer.from(content).toString("base64");
+
+    // https://octokit.github.io/rest.js/v18#repos-create-or-update-file-contents
+    await this.octokit.repos.createOrUpdateFileContents({
+      owner: this.owner,
+      repo: this.repo,
+      path: filePath,
+      message: `docs: update ${filePath} ${this.skipCiString}`,
+      content: contentEncoded,
+      sha: originalSha,
+      branch: branchName,
+    });
   }
 
   async createOrUpdateFiles({ filesByPath, branchName }: Record<any, any>) {
@@ -179,7 +178,7 @@ export class Repository {
 
   async getPullRequestURL({ branchName }: Record<any, any>) {
     try {
-      const results = await this.github.pulls.list({
+      const results = await this.octokit.pulls.list({
         owner: this.owner,
         repo: this.repo,
         state: "open",
@@ -197,7 +196,7 @@ export class Repository {
 
   async createPullRequest({ title, body, branchName }: Record<any, any>) {
     try {
-      const result = await this.github.pulls.create({
+      const result = await this.octokit.pulls.create({
         owner: this.owner,
         repo: this.repo,
         title,

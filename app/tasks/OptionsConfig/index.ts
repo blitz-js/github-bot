@@ -2,15 +2,18 @@ const ALL_CONTRIBUTORS_RC = ".all-contributorsrc";
 
 const { addContributorWithDetails } = require("all-contributors-cli");
 
+import type { Context } from "probot";
 import { AllContributorBotError } from "./../../utils/errors";
+import { Repository } from "../Repository";
 
 export class OptionsConfig {
-  repository: any;
-  options: any;
+  repository: Repository;
+  options: Record<string, any>;
   originalOptionsSha: any;
-  constructor({ repository }: Record<any, any>) {
+
+  constructor({ repository }: { repository: Repository }) {
     this.repository = repository;
-    this.options;
+    this.options = {};
     this.originalOptionsSha;
   }
 
@@ -99,7 +102,14 @@ export class OptionsConfig {
     avatar_url,
     profile,
     context,
-  }: Record<any, any>) {
+  }: {
+    login: string;
+    contributions: any[];
+    name: string;
+    avatar_url: string;
+    profile: string;
+    context: Context;
+  }) {
     const options = this.options;
 
     function findOldContributions(username: string) {
@@ -129,8 +139,8 @@ export class OptionsConfig {
       avatar_url,
       profile: profileWithProtocol,
     });
-    context.log.info("newContributions", newContributions);
-    context.log.info("newContributorsList", newContributorsList);
+    context.log.info(newContributions, "newContributions");
+    context.log.info(newContributorsList, "newContributorsList");
     const newOptions = {
       ...options,
       contributors: newContributorsList,

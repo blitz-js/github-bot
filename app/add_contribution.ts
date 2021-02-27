@@ -1,10 +1,11 @@
+import type { Context } from "probot";
+import type { Handler } from "./utils/types";
 import { Repository } from "./tasks/Repository";
 import { OptionsConfig } from "./tasks/OptionsConfig";
 import { ContentFiles } from "./tasks/ContentFiles";
 import { getUserDetails } from "./utils/getUserDetails";
 import { FILETYPE_TO_CONTRIB_TYPE } from "./settings";
 import { BranchNotFoundError, ResourceNotFoundError } from "./utils/errors";
-import { Context } from "probot";
 
 async function processAddContributor({
   context,
@@ -13,12 +14,19 @@ async function processAddContributor({
   who,
   contributions,
   branchName,
-}: Record<any, any>) {
+}: {
+  context: Context;
+  repository: Repository;
+  optionsConfig: Record<string, any>;
+  who: string;
+  contributions: string[];
+  branchName: string;
+}) {
   if (contributions.length === 0) {
     context.log.info("No contributions");
   }
   const { name, avatar_url, profile } = await getUserDetails({
-    github: context.github,
+    octokit: context.octokit,
     username: who,
   });
 
@@ -44,6 +52,7 @@ async function processAddContributor({
   }
   contentFiles.generate(optionsConfig);
   const filesByPathToUpdate = contentFiles.get();
+  if (!filesByPathToUpdate) throw new Error("Missing filesByPathToUpdate");
   filesByPathToUpdate[optionsConfig.getPath()] = {
     content: optionsConfig.getRaw(),
     originalSha: optionsConfig.getOriginalSha(),
@@ -86,7 +95,7 @@ async function setupRepository({ context, branchName }: Record<any, any>) {
   return repository;
 }
 
-async function setupOptionsConfig({ repository }: Record<any, any>) {
+async function setupOptionsConfig({ repository }: { repository: Repository }) {
   const optionsConfig = new OptionsConfig({
     repository,
   });
@@ -109,7 +118,12 @@ export async function probotProcessPR({
   who,
   action,
   contributions,
-}: Record<any, any>) {
+}: {
+  context: Context;
+  who: string;
+  action: string;
+  contributions: string[];
+}) {
   if (action === "add") {
     const branchName = context.payload.repository.default_branch;
     const repository = await setupRepository({
@@ -133,9 +147,11 @@ export async function probotProcessPR({
   return;
 }
 
-export async function addContributions(context: Context) {
-  const { payload, github } = context;
-  //console.log("addContributions -> payload", payload)
+export const addContributions: Handler<"pull_request.closed"> = async (
+  context
+) => {
+  const { payload, octokit } = context;
+  //context.log.info(payload, "addContributions -> payload")
   const owner = payload.repository.owner.login;
   const repo = payload.repository.name;
   const pull_number = payload.number;
@@ -145,18 +161,22 @@ export async function addContributions(context: Context) {
     payload.pull_request.head.repo.default_branch ===
     payload.pull_request.base.ref;
   const fileChanged = payload.pull_request.changed_files;
-  // console.log("addContributions ->", {
-  //   owner,
-  //   repo,
-  //   pull_number,
-  //   headers: { accept: "application/vnd.github.v3.diff" },
-  //   page: 0,
-  //   per_page: 100,
-  // });
+  // context.log.info(
+  //   {
+  //     owner,
+  //     repo,
+  //     pull_number,
+  //     headers: { accept: "application/vnd.github.v3.diff" },
+  //     page: 0,
+  //     per_page: 100,
+  //   },
+  //   "addContributions ->"
+  // );
   if (isBot || !isTargetDefaultBranch || fileChanged == 0) {
     return;
   }
-  const files = await github.pulls.listFiles({
+
+  const files = await octokit.pulls.listFiles({
     owner,
     repo,
     pull_number,
@@ -181,4 +201,4 @@ export async function addContributions(context: Context) {
   if (contributions.length > 0) {
     await probotProcessPR({ context, who, action, contributions });
   }
-}
+};

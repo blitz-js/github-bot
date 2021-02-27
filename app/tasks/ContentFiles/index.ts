@@ -2,14 +2,23 @@ const { generate: generateContentFile } = require("all-contributors-cli");
 const { initBadge, initContributorsList } = require("all-contributors-cli");
 
 import { AllContributorBotError } from "../../utils/errors";
+import type { Repository } from "../Repository";
+
+type ContentFilesByPath = Record<
+  string,
+  { content: string; sha?: string; originalSha?: string }
+>;
 
 function modifyFiles({
   contentFilesByPath,
   fileContentModifierFunction,
-}: Record<any, any>) {
+}: {
+  contentFilesByPath: ContentFilesByPath;
+  fileContentModifierFunction: (originalContent: string) => string;
+}) {
   const newFilesByPath: any = {};
   Object.entries(contentFilesByPath).forEach(
-    ([filePath, { content, sha, originalSha }]: Array<any>) => {
+    ([filePath, { content, sha, originalSha }]) => {
       const newFileContents = fileContentModifierFunction(content);
       newFilesByPath[filePath] = {
         content: newFileContents,
@@ -24,8 +33,8 @@ function modifyFiles({
  *  Fetches, stores, generates, and updates the readme content files for the contributors list
  */
 export class ContentFiles {
-  repository: any;
-  contentFilesByPath: any;
+  repository: Repository;
+  contentFilesByPath: ContentFilesByPath | null;
   constructor({ repository }: Record<any, any>) {
     this.repository = repository;
     this.contentFilesByPath = null;
@@ -44,6 +53,8 @@ export class ContentFiles {
   }
 
   init() {
+    if (!this.contentFilesByPath) return;
+
     const newFilesByPath = modifyFiles({
       contentFilesByPath: this.contentFilesByPath,
       fileContentModifierFunction: function (content: any) {
@@ -56,6 +67,8 @@ export class ContentFiles {
   }
 
   generate(optionsConfig: any) {
+    if (!this.contentFilesByPath) return;
+
     const options = optionsConfig.get();
     const newFilesByPath = modifyFiles({
       contentFilesByPath: this.contentFilesByPath,
