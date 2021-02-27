@@ -27,7 +27,6 @@
     "probot": "^11.0.6"
   },
   "devDependencies": {
-    "@octokit/rest": "^18.3.0",
     "@tsconfig/node14": "^1.0.0",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.168",

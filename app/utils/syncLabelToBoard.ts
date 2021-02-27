@@ -1,10 +1,10 @@
 import type { EventPayloads } from "@octokit/webhooks";
 import type { OctokitClient } from "./types";
-import { RestEndpointMethodTypes } from "@octokit/rest";
+import { Endpoints } from "@octokit/types";
 import { LABEL_TO_COLUMN } from "../settings";
 
 type PRorIssue =
-  | RestEndpointMethodTypes["search"]["issuesAndPullRequests"]["response"]["data"]["items"][0]
+  | Endpoints["GET /search/issues"]["response"]["data"]["items"][0]
   | EventPayloads.WebhookPayloadPullRequestPullRequest
   | EventPayloads.WebhookPayloadIssuesIssue;
 
