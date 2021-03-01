@@ -3,11 +3,9 @@
 
 import nock from "nock";
 // Requiring our app implementation
-import myProbotApp from "../src";
-import { Probot } from "probot";
-import fs from "fs";
-import path from "path";
-import { IN_PROGRESS_LABEL, IN_REVIEW_LABEL } from "../src/settings";
+import myProbotApp from "../app";
+import { Probot, ProbotOctokit } from "probot";
+import { IN_PROGRESS_LABEL, IN_REVIEW_LABEL } from "../app/settings";
 
 const nockGH = () => nock("https://api.github.com");
 
@@ -25,26 +23,21 @@ const ISSUE_ID = 123456;
 
 describe("My Probot app", () => {
   let probot: any;
-  let mockCert: string;
-
-  beforeAll((done: Function) => {
-    fs.readFile(
-      path.join(__dirname, "fixtures/mock-cert.pem"),
-      "utf8",
-      (err: Error | null, cert: string) => {
-        if (err) return done(err);
-        mockCert = cert;
-        done();
-      }
-    );
-  });
 
   beforeEach(() => {
     nock.disableNetConnect();
     // Test that we correctly return a test token
     // Load our app into probot
-    probot = new Probot({ id: 123, cert: mockCert });
+    probot = new Probot({
+      githubToken: "test",
+      Octokit: ProbotOctokit.defaults({
+        retry: { enabled: false },
+        throttle: { enabled: false },
+      }),
+    });
     probot.load(myProbotApp);
+
+    // check if token is working
     nockGH()
       .post("/app/installations/2/access_tokens")
       .reply(200, { token: "test" });
