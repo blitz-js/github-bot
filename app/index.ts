@@ -8,7 +8,9 @@ import { issue_commentCreated } from "./events/issue_comment.created";
 import { pull_requestClosed } from "./events/pull_request.closed";
 import { issuesAssigned } from "./events/issues.assigned";
 
-export = (app: Probot) => {
+const probotApp = (app: Probot) => {
+  app.log.debug("The app was loaded");
+
   app.on("issues.opened", issuesOpened);
   app.on("issues.labeled", issuesLabeled);
   app.on(["project_card.moved", "project_card.created"], (context) =>
@@ -22,3 +24,5 @@ export = (app: Probot) => {
   app.on("issue_comment.created", issue_commentCreated);
   app.on("issues.assigned", issuesAssigned);
 };
+
+export default probotApp;

@@ -3,7 +3,7 @@ import { createNodeMiddleware, createProbot } from "probot";
 
 const probot = createProbot({
   defaults: {
-    webhookPath: "/api/webhook",
+    webhookPath: "/api/webhooks",
   },
 });
 

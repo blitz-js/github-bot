@@ -6,6 +6,8 @@ import nock from "nock";
 import myProbotApp from "../app";
 import { Probot, ProbotOctokit } from "probot";
 import { IN_PROGRESS_LABEL, IN_REVIEW_LABEL } from "../app/settings";
+import fs from "fs";
+import path from "path";
 
 const nockGH = () => nock("https://api.github.com");
 
@@ -23,12 +25,27 @@ const ISSUE_ID = 123456;
 
 describe("My Probot app", () => {
   let probot: any;
+  let mockCert: string;
+
+  beforeAll((done: Function) => {
+    fs.readFile(
+      path.join(__dirname, "fixtures/mock-cert.pem"),
+      "utf8",
+      (err: Error | null, cert: string) => {
+        if (err) return done(err);
+        mockCert = cert;
+        done();
+      }
+    );
+  });
 
   beforeEach(() => {
     nock.disableNetConnect();
     // Test that we correctly return a test token
     // Load our app into probot
     probot = new Probot({
+      appId: 123,
+      privateKey: mockCert,
       githubToken: "test",
       Octokit: ProbotOctokit.defaults({
         retry: { enabled: false },
