@@ -1,4 +1,4 @@
-import app from "../app";
+import app from "@app";
 import { createNodeMiddleware, createProbot } from "probot";
 
 const probot = createProbot({

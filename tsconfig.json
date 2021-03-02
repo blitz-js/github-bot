@@ -2,8 +2,15 @@
   "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
     "outDir": "./lib",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "@app": ["app/index.ts"],
+      "@events/*": ["app/events/*"],
+      "@settings": ["app/settings.ts"],
+      "@utils/*": ["app/utils/*"]
+    }
   },
-  "include": ["app"],
+  "include": ["app", "api"],
   "compileOnSave": false
 }

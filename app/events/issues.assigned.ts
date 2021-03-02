@@ -1,5 +1,5 @@
-import type { Handler } from "../utils/types";
-import { ASSIGNED_LABEL } from "../settings";
+import type { Handler } from "@utils/types";
+import { ASSIGNED_LABEL } from "@settings";
 
 export const issuesAssigned: Handler<"issues.assigned"> = async ({
   payload,

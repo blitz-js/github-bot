@@ -1,5 +1,5 @@
-import type { Handler } from "../utils/types";
-import { IN_PROGRESS_LABEL, IN_REVIEW_LABEL } from "../settings";
+import type { Handler } from "@utils/types";
+import { IN_PROGRESS_LABEL, IN_REVIEW_LABEL } from "@settings";
 
 // Move pull request around based on draft status
 export const pull_requestOpened: Handler<"pull_request.opened"> = async ({

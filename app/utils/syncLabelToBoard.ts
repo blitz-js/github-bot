@@ -1,7 +1,7 @@
 import type { EventPayloads } from "@octokit/webhooks";
-import type { OctokitClient } from "./types";
+import type { OctokitClient } from "@utils/types";
 import { Endpoints } from "@octokit/types";
-import { LABEL_TO_COLUMN } from "../settings";
+import { LABEL_TO_COLUMN } from "@settings";
 
 type PRorIssue =
   | Endpoints["GET /search/issues"]["response"]["data"]["items"][0]

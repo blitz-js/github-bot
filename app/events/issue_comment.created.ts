@@ -1,6 +1,6 @@
-import type { Handler, OctokitClient } from "../utils/types";
-import { syncLabelToBoard } from "../utils/syncLabelToBoard";
-import { LABEL_TO_COLUMN, TRIAGE_LABEL } from "../settings";
+import type { Handler, OctokitClient } from "@utils/types";
+import { syncLabelToBoard } from "@utils/syncLabelToBoard";
+import { LABEL_TO_COLUMN, TRIAGE_LABEL } from "@settings";
 
 async function getIssuesToFix(octokit: OctokitClient, repoName: string) {
   return (

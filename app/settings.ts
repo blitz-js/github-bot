@@ -15,8 +15,13 @@ export const LABEL_TO_COLUMN: Record<string, string> = {
   "status/done": "Done",
 };
 
-export const FILETYPE_TO_CONTRIB_TYPE: Array<Record<string, Array<string>>> = [
-  { docs: [".md", ".txt"] },
-  { test: [".test.js", ".test.ts"] },
-  { code: [".js", ".ts", ".jsx", ".tsx", ".json", ".sh"] },
-];
+export const CONTRIB_TO_FILETYPE: Record<string, string[]> = {
+  doc: [".md", ".txt"],
+  test: [".test.js", ".test.ts"],
+  code: [".js", ".ts", ".jsx", ".tsx", ".json", ".sh"],
+};
+
+export const CONTRIBUTIONS_SETTINGS = {
+  repo: { owner: "blitz-js", repo: "blitz" },
+  defaultBranch: "canary",
+};

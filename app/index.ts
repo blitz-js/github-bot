@@ -1,12 +1,12 @@
 import { Probot } from "probot";
-import { issuesLabeled } from "./events/issues.labeled";
-import { project_cardMoved } from "./events/project_card.moved";
-import { issuesOpened } from "./events/issues.opened";
-import { pull_requestOpened } from "./events/pull_request.opened";
-import { pull_requestLabeled } from "./events/pull_reqest.labeled";
-import { issue_commentCreated } from "./events/issue_comment.created";
-import { pull_requestClosed } from "./events/pull_request.closed";
-import { issuesAssigned } from "./events/issues.assigned";
+import { issuesLabeled } from "@events/issues.labeled";
+import { project_cardMoved } from "@events/project_card.moved";
+import { issuesOpened } from "@events/issues.opened";
+import { pull_requestOpened } from "@events/pull_request.opened";
+import { pull_requestLabeled } from "@events/pull_reqest.labeled";
+import { issue_commentCreated } from "@events/issue_comment.created";
+import { pull_requestClosed } from "@events/pull_request.closed/index";
+import { issuesAssigned } from "@events/issues.assigned";
 
 const probotApp = (app: Probot) => {
   app.log.debug("The app was loaded");
