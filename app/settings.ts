@@ -16,7 +16,7 @@ export const LABEL_TO_COLUMN: Record<string, string> = {
 };
 
 export const CONTRIB_TO_FILETYPE: Record<string, string[]> = {
-  doc: [".md", ".txt"],
+  doc: [".md", ".mdx", ".txt"],
   test: [".test.js", ".test.ts"],
   code: [".js", ".ts", ".jsx", ".tsx", ".json", ".sh"],
 };

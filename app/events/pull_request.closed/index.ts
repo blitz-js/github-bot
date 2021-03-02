@@ -12,13 +12,14 @@ export const pull_requestClosed: Handler<"pull_request.closed"> = async (
     repo: payload.repository.name,
   };
 
-  const isBot = payload.pull_request.user.type === "Bot";
+  const isBot = payload.pull_request.user.type.toLowerCase() === "bot";
   const isTargetDefaultBranch =
     payload.pull_request.head.repo.default_branch ===
     payload.pull_request.base.ref;
   const fileChanged = payload.pull_request.changed_files;
+  const wasMerged = payload.pull_request.merged;
 
-  if (isBot || !isTargetDefaultBranch || fileChanged === 0) {
+  if (isBot || !isTargetDefaultBranch || fileChanged === 0 || !wasMerged) {
     return;
   }
 

@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true
   },
-  "include": ["app/**/*.ts", "api/**/*.ts"],
+  "include": ["app/**/*.ts"],
+  "exclude": ["node_modules"],
   "compileOnSave": false
 }

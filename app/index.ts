@@ -9,7 +9,9 @@ import { pull_requestClosed } from "./events/pull_request.closed/index";
 import { issuesAssigned } from "./events/issues.assigned";
 
 const probotApp = (app: Probot) => {
-  app.log.debug("The app was loaded");
+  app.onAny((event) =>
+    app.log.info(`Reviced ${event.name}.${event.payload?.action || "any"}`)
+  );
 
   app.on("issues.opened", issuesOpened);
   app.on("issues.labeled", issuesLabeled);

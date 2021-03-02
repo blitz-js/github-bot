@@ -1,7 +1,7 @@
 import { CONTRIBUTIONS_SETTINGS } from "../../settings";
 import { OctokitClient } from "../../utils/types";
 import { ResourceNotFoundError } from "../../utils/errors";
-import _, { isEqual } from "lodash";
+import _ from "lodash";
 
 // @ts-expect-error
 import { addContributorWithDetails, generate } from "all-contributors-cli";
@@ -19,7 +19,7 @@ async function getFile({
 }) {
   const { data: file } = await octokit.repos.getContent({
     ...repo,
-    branch,
+    ref: branch,
     path,
   });
 
@@ -43,6 +43,16 @@ async function updateFile({
   path: string;
   content: string;
 }) {
+  const { data: oldFile } = await octokit.repos.getContent({
+    ...repo,
+    ref: branch,
+    path,
+  });
+
+  if (Array.isArray(oldFile) || !("content" in oldFile)) {
+    throw new ResourceNotFoundError(path, `${repo.owner}/${repo.repo}`);
+  }
+
   const encodedContent = Buffer.from(content, "utf-8").toString("base64");
 
   return await octokit.repos.createOrUpdateFileContents({
@@ -51,6 +61,7 @@ async function updateFile({
     message: `updated ${path}`,
     path,
     branch,
+    sha: oldFile.sha,
   });
 }
 
@@ -65,6 +76,22 @@ export async function addContributor({
 }) {
   const { repo, defaultBranch } = CONTRIBUTIONS_SETTINGS;
 
+  // Check if branch exists
+  const branchName = `add-contributor/${contributor}`;
+  let branchExists: boolean;
+
+  try {
+    await octokit.git.getRef({
+      ...repo,
+      ref: `heads/${branchName}`,
+    });
+
+    // If it didn't throw an error, it means it exists
+    branchExists = true;
+  } catch (error) {
+    branchExists = false;
+  }
+
   // Get contributor data
   const { data: contributorData } = await octokit.users.getByUsername({
     username: contributor,
@@ -72,7 +99,12 @@ export async function addContributor({
 
   // Get .all-contributorsrc and modify it
   let allContributorsSrc = JSON.parse(
-    await getFile({ octokit, repo, path: ".all-contributorsrc" })
+    await getFile({
+      octokit,
+      repo,
+      path: ".all-contributorsrc",
+      branch: branchExists ? branchName : defaultBranch,
+    })
   );
 
   const oldContributions =
@@ -88,7 +120,12 @@ export async function addContributor({
   });
 
   // Get README.md and modify it
-  let readme = await getFile({ octokit, repo, path: "README.md" });
+  let readme = await getFile({
+    octokit,
+    repo,
+    path: "README.md",
+    branch: branchExists ? branchName : defaultBranch,
+  });
 
   readme = await generate(
     allContributorsSrc,
@@ -97,18 +134,7 @@ export async function addContributor({
   );
 
   // Create branch if doesn't exist
-  const branchName = `add-contributor/${contributor}`;
-  let branchExists = true;
-
-  try {
-    await octokit.git.getRef({
-      ...repo,
-      ref: `heads/${branchName}`,
-    });
-
-    // If it didn't throw an error, it means it doesn't exist
-    branchExists = false;
-  } catch (error) {
+  if (!branchExists) {
     const { data: defaultBranchRef } = await octokit.git.getRef({
       ...repo,
       ref: `heads/${defaultBranch}`,
