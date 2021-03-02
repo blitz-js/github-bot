@@ -1,6 +1,7 @@
 import { CONTRIBUTIONS_SETTINGS } from "../../settings";
 import { OctokitClient } from "../../utils/types";
 import { ResourceNotFoundError } from "../../utils/errors";
+import _, { isEqual } from "lodash";
 
 // @ts-expect-error
 import { addContributorWithDetails, generate } from "all-contributors-cli";
@@ -74,15 +75,16 @@ export async function addContributor({
     await getFile({ octokit, repo, path: ".all-contributorsrc" })
   );
 
+  const oldContributions =
+    allContributorsSrc.contributors.find((c: any) => c.login === contributor)
+      ?.contributions || [];
+
+  if (_.isEqual(contributions, oldContributions)) return;
+
   allContributorsSrc.contributors = await addContributorWithDetails({
     ...contributorData,
     options: allContributorsSrc,
-    contributions: [
-      ...contributions,
-      ...(allContributorsSrc.contributors.find(
-        (c: any) => c.login === contributor
-      )?.contributions || []),
-    ],
+    contributions: _.uniq([...contributions, ...(oldContributions || [])]),
   });
 
   // Get README.md and modify it
