@@ -1,5 +1,5 @@
-import { UserNotFoundError } from "@utils/errors";
-import type { OctokitClient } from "@utils/types";
+import { UserNotFoundError } from "./errors";
+import type { OctokitClient } from "./types";
 
 export async function getUserDetails({
   octokit,

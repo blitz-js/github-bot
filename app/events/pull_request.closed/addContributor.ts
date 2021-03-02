@@ -1,5 +1,6 @@
-import { CONTRIBUTIONS_SETTINGS } from "@settings";
-import { OctokitClient } from "@utils/types";
+import { CONTRIBUTIONS_SETTINGS } from "../../settings";
+import { OctokitClient } from "../../utils/types";
+import { ResourceNotFoundError } from "../../utils/errors";
 
 // @ts-expect-error
 import { addContributorWithDetails, generate } from "all-contributors-cli";
@@ -22,7 +23,7 @@ async function getFile({
   });
 
   if (Array.isArray(file) || !("content" in file)) {
-    throw Error(`File path "${path}" isn't a valid file`);
+    throw new ResourceNotFoundError(path, `${repo.owner}/${repo.repo}`);
   }
 
   return Buffer.from(file.content, "base64").toString("utf-8");

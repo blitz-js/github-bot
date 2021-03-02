@@ -1,5 +1,5 @@
-import { CONTRIB_TO_FILETYPE } from "@settings";
-import { OctokitClient } from "@utils/types";
+import { CONTRIB_TO_FILETYPE } from "../../settings";
+import { OctokitClient } from "../../utils/types";
 
 const isTranslatedRepo = (repoName: string) =>
   /^[a-z-]\.blitzjs\.com$/.test(repoName);
