@@ -1,5 +1,5 @@
-import app from "../dist";
-import { createNodeMiddleware, createProbot } from "probot";
+const app = require("../dist");
+const { createNodeMiddleware, createProbot } = require("probot");
 
 const probot = createProbot({
   defaults: {
@@ -7,4 +7,4 @@ const probot = createProbot({
   },
 });
 
-export default createNodeMiddleware(app, { probot });
+module.exports = createNodeMiddleware(app, { probot });
