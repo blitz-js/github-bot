@@ -14,46 +14,37 @@
     "probot-app"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc && (tsc -w --preserveWatchOutput & nodemon)",
-    "dev": "npm run build:watch",
-    "start": "probot run ./lib/index.js",
     "test": "jest",
-    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+    "test:watch": "jest --watch --notify --notifyMode=change --coverage",
+    "postinstall": "husky install"
   },
   "dependencies": {
-    "@octokit/webhooks": "^7.4.0",
-    "all-contributors-cli": "^6.14.2",
-    "lodash": "^4.17.19",
-    "probot": "^9.5.3",
-    "probot-serverless-now": "^2.1.2"
+    "all-contributors-cli": "^6.20.0",
+    "lodash": "^4.17.21",
+    "probot": "^11.1.0",
+    "shelljs": "^0.8.4"
   },
   "devDependencies": {
-    "@types/jest": "^25.1.0",
-    "@types/lodash": "^4.14.150",
+    "@tsconfig/node14": "^1.0.0",
+    "@types/jest": "^26.0.20",
+    "@types/lodash": "^4.14.168",
     "@types/nock": "^11.1.0",
-    "@types/node": "^13.1.0",
-    "@typescript-eslint/parser": "^2.4.0",
-    "eslint-plugin-typescript": "^0.14.0",
-    "husky": "^4.2.5",
-    "jest": "^24.9.0",
-    "nock": "^12.0.0",
-    "nodemon": "^2.0.0",
-    "prettier": "^2.0.5",
-    "pretty-quick": "^2.0.1",
-    "smee-client": "^1.1.0",
-    "ts-jest": "^25.1.0",
-    "typescript": "^3.6.4"
+    "@types/node": "^14.14.31",
+    "@types/shelljs": "^0.8.8",
+    "concurrently": "^6.0.0",
+    "husky": "5.1.2",
+    "jest": "^26.6.3",
+    "nock": "^13.0.9",
+    "prettier": "^2.2.1",
+    "pretty-quick": "^3.1.0",
+    "smee-client": "^1.2.2",
+    "ts-jest": "^26.5.2",
+    "typescript": "^4.2.2"
   },
   "engines": {
-    "node": ">= 8.3.0"
+    "node": "14.x"
   },
   "jest": {
     "testEnvironment": "node"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
   }
 }

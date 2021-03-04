@@ -1,9 +1,16 @@
 import { UserNotFoundError } from "./errors";
+import type { OctokitClient } from "./types";
 
-export async function getUserDetails({ github, username }: Record<any, any>) {
+export async function getUserDetails({
+  octokit,
+  username,
+}: {
+  octokit: OctokitClient;
+  username: string;
+}) {
   let result;
   try {
-    result = await github.users.getByUsername({ username });
+    result = await octokit.users.getByUsername({ username });
   } catch (error) {
     if (error.status === 404) {
       throw new UserNotFoundError(username);
