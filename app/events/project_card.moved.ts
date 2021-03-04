@@ -1,21 +1,21 @@
-import { Context } from "probot";
-import { WebhookPayloadProjectCard } from "@octokit/webhooks";
-import { LABEL_TO_COLUMN } from "./settings";
+import type { Handler } from "../utils/types";
+import { LABEL_TO_COLUMN } from "../settings";
 import { findKey } from "lodash";
 
 // Sync project board => labels
-export async function project_cardMoved({
+export const project_cardMoved: Handler<"project_card.moved"> = async ({
   payload,
-  github,
-}: Context<WebhookPayloadProjectCard>) {
+  octokit,
+}) => {
   // ignore note cards
   if ((payload.project_card as any).content_url === undefined) {
     return;
   }
 
   const newColumn = payload.project_card.column_id;
-  const columnName = (await github.projects.getColumn({ column_id: newColumn }))
-    .data.name;
+  const columnName = (
+    await octokit.projects.getColumn({ column_id: newColumn })
+  ).data.name;
   const labelName = findKey(LABEL_TO_COLUMN, (c) => c === columnName);
   if (labelName === undefined) {
     console.log("project card moved to column with no corresponding label");
@@ -24,13 +24,13 @@ export async function project_cardMoved({
   const issueNum: number = issueNumFromURL(
     (payload.project_card as any).content_url
   );
-  await github.issues.addLabels({
+  await octokit.issues.addLabels({
     owner: payload.repository.owner.login,
     repo: payload.repository.name,
     issue_number: issueNum,
     labels: [labelName],
   });
-}
+};
 
 function issueNumFromURL(url: string): number {
   const parts = url.split("/");

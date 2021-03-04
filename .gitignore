@@ -7,4 +7,4 @@ package-lock.json
 coverage
 lib
 
-.now
+.vercel

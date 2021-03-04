@@ -1,23 +1,22 @@
-import { Context, GitHubAPI } from "probot";
-import { WebhookPayloadIssueComment } from "@octokit/webhooks";
-import { syncLabelToBoard } from "./syncLabelToBoard";
-import { LABEL_TO_COLUMN, TRIAGE_LABEL } from "./settings";
+import type { Handler, OctokitClient } from "../utils/types";
+import { syncLabelToBoard } from "../utils/syncLabelToBoard";
+import { LABEL_TO_COLUMN, TRIAGE_LABEL } from "../settings";
 
-async function getIssuesToFix(github: GitHubAPI, repoName: string) {
+async function getIssuesToFix(octokit: OctokitClient, repoName: string) {
   return (
-    await github.search.issuesAndPullRequests({
+    await octokit.search.issuesAndPullRequests({
       q: `is:open+no:project+repo:${repoName}`,
     })
   ).data.items;
 }
 // Listen for people asking the bot to do stuff
-export async function issue_commentCreated({
+export const issue_commentCreated: Handler<"issue_comment.created"> = async ({
   payload,
-  github,
-}: Context<WebhookPayloadIssueComment>) {
+  octokit,
+}) => {
   if (payload.comment.body.trim() === "blitz bot sync") {
     const issuesToFix = await getIssuesToFix(
-      github,
+      octokit,
       payload.repository.full_name
     );
     // Plan
@@ -27,7 +26,7 @@ export async function issue_commentCreated({
 ${issuesToFix.map((i) => "#" + i.number).join(", ")}
 \`blitz bot sync confirm\` to execute`
         : `All open issues are already on the project board.`;
-    await github.issues.createComment({
+    await octokit.issues.createComment({
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
       issue_number: payload.issue.number,
@@ -35,7 +34,7 @@ ${issuesToFix.map((i) => "#" + i.number).join(", ")}
     });
   } else if (payload.comment.body.trim() === "blitz bot sync confirm") {
     const issuesToFix = await getIssuesToFix(
-      github,
+      octokit,
       payload.repository.full_name
     );
     // Execute
@@ -50,9 +49,9 @@ ${issuesToFix.map((i) => "#" + i.number).join(", ")}
           prOrIssue: issueToSync,
           isPR: false,
           newLabel: canonicalLabel,
-          github,
+          octokit,
         });
       })
     );
   }
-}
+};
