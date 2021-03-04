@@ -1,4 +1,4 @@
-# blitz-bot
+# gh-project-bot
 
 Bot to manage Blitz GitHub project board, all-contributors list in README, and other automations!
 
@@ -8,8 +8,12 @@ Bot to manage Blitz GitHub project board, all-contributors list in README, and o
 
 ```sh
 # Install dependencies
-yarn
+npm install
 
-# Run locally
-./scripts/run-dev.sh
+# Run with hot reload
+npm run build:watch
+
+# Compile and run
+npm run build
+npm run start
 ```
