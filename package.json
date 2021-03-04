@@ -14,7 +14,6 @@
     "probot-app"
   ],
   "scripts": {
-    "build": "ncc build app/index.ts -o dist",
     "test": "jest",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage",
     "postinstall": "husky install"
@@ -32,7 +31,6 @@
     "@types/nock": "^11.1.0",
     "@types/node": "^14.14.31",
     "@types/shelljs": "^0.8.8",
-    "@vercel/ncc": "^0.27.0",
     "concurrently": "^6.0.0",
     "husky": "5.1.2",
     "jest": "^26.6.3",
