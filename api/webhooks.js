@@ -1,4 +1,4 @@
-import app from "../app";
+import app from "../dist";
 import { createNodeMiddleware, createProbot } from "probot";
 
 const probot = createProbot({
