@@ -93,9 +93,15 @@ export async function addContributor({
   }
 
   // Get contributor data
-  const { data: contributorData } = await octokit.users.getByUsername({
+  const { data: rawContributorData } = await octokit.users.getByUsername({
     username: contributor,
   });
+
+  const contributorData = {
+    name: rawContributorData.name || rawContributorData.login,
+    avatar_url: rawContributorData.avatar_url,
+    profile: rawContributorData.blog || rawContributorData.html_url,
+  };
 
   // Get .all-contributorsrc and modify it
   let allContributorsSrc = JSON.parse(
