@@ -117,13 +117,14 @@ export async function addContributor({
   const oldContributions =
     allContributorsSrc.contributors.find((c: any) => c.login === contributor)
       ?.contributions || [];
+  const allContributions = _.uniq([...oldContributions, ...contributions]);
 
-  if (_.isEqual(contributions, oldContributions)) return;
+  if (allContributions.length <= oldContributions.length) return;
 
   allContributorsSrc.contributors = await addContributorWithDetails({
     ...contributorData,
     options: allContributorsSrc,
-    contributions: _.uniq([...contributions, ...(oldContributions || [])]),
+    contributions: allContributions,
   });
 
   // Get README.md and modify it
