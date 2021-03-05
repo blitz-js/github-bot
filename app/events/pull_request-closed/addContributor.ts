@@ -98,6 +98,7 @@ export async function addContributor({
   });
 
   const contributorData = {
+    login: rawContributorData.login,
     name: rawContributorData.name || rawContributorData.login,
     avatar_url: rawContributorData.avatar_url,
     profile: rawContributorData.blog || rawContributorData.html_url,
