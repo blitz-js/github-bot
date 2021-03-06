@@ -15,11 +15,10 @@ const probotApp = (app: Probot) => {
 
   app.on("issues.opened", issuesOpened);
   app.on("issues.labeled", issuesLabeled);
-  app.on(["project_card.moved", "project_card.created"], (context) =>
-    project_cardMoved(context)
-  );
-  app.on(["pull_request.opened", "pull_request.ready_for_review"], (context) =>
-    pull_requestOpened(context)
+  app.on(["project_card.moved", "project_card.created"], project_cardMoved);
+  app.on(
+    ["pull_request.opened", "pull_request.ready_for_review"],
+    pull_requestOpened
   );
   app.on("pull_request.labeled", pull_requestLabeled);
   app.on("pull_request.closed", pull_requestClosed);

@@ -3,10 +3,9 @@ import { LABEL_TO_COLUMN } from "../settings";
 import { findKey } from "lodash";
 
 // Sync project board => labels
-export const project_cardMoved: Handler<"project_card.moved"> = async ({
-  payload,
-  octokit,
-}) => {
+export const project_cardMoved: Handler<
+  "project_card.moved" | "project_card.created"
+> = async ({ payload, octokit }) => {
   // ignore note cards
   if ((payload.project_card as any).content_url === undefined) {
     return;
