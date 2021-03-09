@@ -1,5 +1,5 @@
-import type { Handler } from "@/utils/types";
-import { syncLabelToBoard } from "@/utils/syncLabelToBoard";
+import type { Handler } from "../utils/types";
+import { syncLabelToBoard } from "../utils/syncLabelToBoard";
 
 // Sync labels => project board
 export const issuesLabeled: Handler<"issues.labeled"> = async ({

@@ -1,6 +1,6 @@
-import type { Handler } from "@/utils/types";
-import { TRIAGE_LABEL, LABEL_TO_COLUMN } from "@/settings";
-import { syncLabelToBoard } from "@/utils/syncLabelToBoard";
+import type { Handler } from "../utils/types";
+import { TRIAGE_LABEL, LABEL_TO_COLUMN } from "../settings";
+import { syncLabelToBoard } from "../utils/syncLabelToBoard";
 
 // Add Triage label when an issue is opened
 export const issuesOpened: Handler<"issues.opened"> = async ({
