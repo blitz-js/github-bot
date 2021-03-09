@@ -1,7 +1,7 @@
-import { CONTRIBUTIONS_SETTINGS } from "../../settings";
-import commit from "../../utils/commit";
-import { OctokitClient } from "../../utils/types";
-import { ResourceNotFoundError } from "../../utils/errors";
+import { CONTRIBUTIONS_SETTINGS } from "@/settings";
+import commit from "@/utils/commit";
+import { OctokitClient } from "@/utils/types";
+import { ResourceNotFoundError } from "@/utils/errors";
 import _ from "lodash";
 
 // @ts-expect-error

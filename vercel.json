@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/webhooks.ts": {
+      "includeFiles": "app/*"
+    }
+  }
+}

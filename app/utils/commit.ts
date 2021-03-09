@@ -1,4 +1,4 @@
-import { OctokitClient } from "./types";
+import { OctokitClient } from "@/utils/types";
 
 // Adapted from
 // https://github.com/mheap/octokit-commit-multiple-files

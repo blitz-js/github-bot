@@ -1,4 +1,4 @@
-import { Handler } from "../../utils/types";
+import { Handler } from "@/utils/types";
 
 import { addContributor } from "./addContributor";
 import { getContributions } from "./getContributions";

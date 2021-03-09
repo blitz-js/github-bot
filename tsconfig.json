@@ -1,9 +1,16 @@
 {
   "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
-    "strict": true
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/app": ["app/index.ts"],
+      "@/events/*": ["app/events/*"],
+      "@/utils/*": ["app/utils/*"],
+      "@/settings": ["app/settings.ts"]
+    }
   },
-  "include": ["app/**/*.ts"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"],
   "compileOnSave": false
 }

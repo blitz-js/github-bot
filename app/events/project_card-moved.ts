@@ -1,5 +1,5 @@
-import type { Handler } from "../utils/types";
-import { LABEL_TO_COLUMN } from "../settings";
+import type { Handler } from "@/utils/types";
+import { LABEL_TO_COLUMN } from "@/settings";
 import { findKey } from "lodash";
 
 // Sync project board => labels

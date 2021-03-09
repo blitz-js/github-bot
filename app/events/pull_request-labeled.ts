@@ -1,5 +1,5 @@
-import type { Handler } from "../utils/types";
-import { syncLabelToBoard } from "../utils/syncLabelToBoard";
+import type { Handler } from "@/utils/types";
+import { syncLabelToBoard } from "@/utils/syncLabelToBoard";
 
 // graphql
 // Sync labels => project board
