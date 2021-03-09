@@ -31,9 +31,17 @@ export const pull_requestClosed: Handler<"pull_request.closed"> = async (
 
   if (contributions.length === 0) return;
 
-  await addContributor({
+  const contributionMsg = await addContributor({
     octokit,
     contributor: payload.pull_request.user.login,
     contributions,
   });
+
+  if (contributionMsg) {
+    await octokit.issues.createComment({
+      ...repo,
+      issue_number: payload.number,
+      body: contributionMsg,
+    });
+  }
 };

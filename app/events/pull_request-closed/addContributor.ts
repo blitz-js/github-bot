@@ -31,6 +31,16 @@ async function getFile({
   return Buffer.from(file.content, "base64").toString("utf-8");
 }
 
+function englishArray(array: string[]): string {
+  let arr: string[] = Object.assign([], array);
+
+  if (arr.length === 0) return "";
+  if (arr.length === 1) return arr[0];
+
+  const lastItem = arr.pop();
+  return arr.join(", ") + " and " + lastItem;
+}
+
 export async function addContributor({
   octokit,
   contributor,
@@ -64,17 +74,17 @@ export async function addContributor({
     })
   );
 
-  const oldContributions =
+  const oldContributions: string[] =
     allContributorsSrc.contributors.find((c: any) => c.login === contributor)
       ?.contributions || [];
-  const allContributions = _.uniq([...oldContributions, ...contributions]);
+  const newContributions = _.difference(contributions, oldContributions);
 
-  if (allContributions.length <= oldContributions.length) return;
+  if (newContributions.length === 0) return;
 
   allContributorsSrc.contributors = await addContributorWithDetails({
     ...contributorData,
     options: allContributorsSrc,
-    contributions: allContributions,
+    contributions: [...oldContributions, ...newContributions],
   });
 
   // Get README.md and modify it
@@ -98,12 +108,10 @@ export async function addContributor({
     branch: defaultBranch,
     changes: [
       {
-        message: [
-          "(meta)",
-          oldContributions.length > 0 ? "updated" : "added",
-          `@${contributor}`,
-          "as contributor",
-        ].join(" "),
+        message:
+          oldContributions.length === 0
+            ? `(meta) added @${contributor} as contributor`
+            : `(meta) updated @${contributor} contributions`,
         files: {
           ".all-contributorsrc": JSON.stringify(allContributorsSrc, null, 2),
           "README.md": readme,
@@ -111,4 +119,8 @@ export async function addContributor({
       },
     ],
   });
+
+  return `Added @${contributor} contributions for ${englishArray(
+    newContributions
+  )}`;
 }
