@@ -1,10 +1,10 @@
-node_modules
-npm-debug.log
-*.pem
-!mock-cert.pem
 .env
-package-lock.json
-coverage
-lib
-
 .vercel
+
+# Yarn
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

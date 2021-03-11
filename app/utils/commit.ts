@@ -1,13 +1,8 @@
-import { OctokitClient } from "./types";
+import octokit from "@/utils/octokit";
+import { AnyRepo, ParsedRepo, parseRepo } from "@/utils/helpers";
 
 // Adapted from
 // https://github.com/mheap/octokit-commit-multiple-files
-
-interface OctoRepo {
-  octokit: OctokitClient;
-  owner: string;
-  repo: string;
-}
 
 type TreeMode =
   | "100644"
@@ -28,22 +23,18 @@ interface Change {
   ignoreDeletionFailures?: boolean;
 }
 
-export default async function commit(
-  args: OctoRepo & {
-    branch: string;
-    changes: Change[];
-    committer?: {
-      name?: string;
-      email?: string;
-      date?: string;
-    };
-  }
-) {
-  const { octokit, branch: branchName, changes, committer } = args;
-  const repo = { owner: args.owner, repo: args.repo };
-  const octorepo: OctoRepo = { octokit, ...repo };
-
-  const repoName = `${repo.owner}/${repo.repo}:${branchName}`;
+export default async function commit(args: {
+  repo: AnyRepo;
+  branch: string;
+  changes: Change[];
+  committer?: {
+    name?: string;
+    email?: string;
+    date?: string;
+  };
+}) {
+  const { branch: branchName, changes, committer } = args;
+  const repo = parseRepo(args.repo);
 
   // Check for empty commits
   for (const change of changes) {
@@ -58,7 +49,7 @@ export default async function commit(
   }
 
   // SHA of the branch
-  let baseTree = await loadRef({ ...octorepo, ref: branchName });
+  let baseTree = await loadRef({ repo, ref: branchName });
 
   for (const change of changes) {
     let treeItems: {
@@ -74,16 +65,14 @@ export default async function commit(
     ) {
       for (const fileName of change.filesToDelete) {
         const exists = await fileExistsInRepo({
-          ...octorepo,
+          repo,
           path: fileName,
           ref: baseTree,
         });
 
         // `ignoreDeletionFailures` is false by default
         if (!exists && !change.ignoreDeletionFailures) {
-          throw new Error(
-            `The file ${fileName} could not be found in ${repoName}`
-          );
+          throw new Error(`The file ${fileName} could not be found in ${repo}`);
         }
 
         treeItems.push({
@@ -113,7 +102,7 @@ export default async function commit(
           if (file.type) type = file.type;
         }
 
-        const fileSha = await createBlob({ ...octorepo, contents, type });
+        const fileSha = await createBlob({ repo, contents, type });
 
         treeItems.push({
           path: fileName,
@@ -152,18 +141,19 @@ export default async function commit(
 }
 
 const createBlob = async ({
-  octokit,
-  owner,
   repo,
   contents,
   type,
-}: OctoRepo & { contents: string; type?: TreeType }) => {
+}: {
+  repo: ParsedRepo;
+  contents: string;
+  type?: TreeType;
+}) => {
   if (type === "commit") {
     return contents;
   } else {
     const res = await octokit.git.createBlob({
-      owner,
-      repo,
+      ...repo,
       content: Buffer.from(contents).toString("base64"),
       encoding: "base64",
     });
@@ -172,17 +162,18 @@ const createBlob = async ({
 };
 
 const fileExistsInRepo = async ({
-  octokit,
-  owner,
   repo,
   path,
   ref,
-}: OctoRepo & { path: string; ref: string }) => {
+}: {
+  repo: ParsedRepo;
+  path: string;
+  ref: string;
+}) => {
   try {
     await octokit.repos.getContent({
+      ...repo,
       method: "HEAD",
-      owner,
-      repo,
       path,
       ref,
     });
@@ -192,20 +183,14 @@ const fileExistsInRepo = async ({
   }
 };
 
-const loadRef = async ({
-  octokit,
-  owner,
-  repo,
-  ref,
-}: OctoRepo & { ref: string }) => {
+const loadRef = async ({ repo, ref }: { repo: ParsedRepo; ref: string }) => {
   try {
     const res = await octokit.git.getRef({
-      owner,
-      repo,
+      ...repo,
       ref: `heads/${ref}`,
     });
     return res.data.object.sha;
   } catch (e) {
-    throw new Error(`The branch "${ref}" does not exists in ${owner}/${repo}`);
+    throw new Error(`The branch "${ref}" does not exists in ${repo}`);
   }
 };

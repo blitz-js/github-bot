@@ -1,23 +1,23 @@
-import { CONTRIBUTIONS_SETTINGS } from "../../settings";
-import commit from "../../utils/commit";
-import { OctokitClient } from "../../utils/types";
-import { ResourceNotFoundError } from "../../utils/errors";
+import { CONTRIBUTIONS_SETTINGS } from "@/settings";
+import commit from "@/utils/commit";
+import octokit from "@/utils/octokit";
 import _ from "lodash";
+import { parseRepo, AnyRepo } from "@/utils/helpers";
 
 // @ts-expect-error
 import { addContributorWithDetails, generate } from "all-contributors-cli";
 
 async function getFile({
-  octokit,
-  repo,
+  repo: repository,
   branch,
   path,
 }: {
-  octokit: OctokitClient;
-  repo: { owner: string; repo: string };
+  repo: AnyRepo;
   branch?: string;
   path: string;
 }) {
+  const repo = parseRepo(repository);
+
   const { data: file } = await octokit.repos.getContent({
     ...repo,
     ref: branch,
@@ -25,7 +25,7 @@ async function getFile({
   });
 
   if (Array.isArray(file) || !("content" in file)) {
-    throw new ResourceNotFoundError(path, `${repo.owner}/${repo.repo}`);
+    throw new Error(`"${path}" not found in ${repo}:${branch}`);
   }
 
   return Buffer.from(file.content, "base64").toString("utf-8");
@@ -42,11 +42,9 @@ function englishArray(array: string[]): string {
 }
 
 export async function addContributor({
-  octokit,
   contributor,
   contributions,
 }: {
-  octokit: OctokitClient;
   contributor: string;
   contributions: string[];
 }) {
@@ -67,7 +65,6 @@ export async function addContributor({
   // Get .all-contributorsrc and modify it
   let allContributorsSrc = JSON.parse(
     await getFile({
-      octokit,
       repo,
       path: ".all-contributorsrc",
       branch: defaultBranch,
@@ -89,7 +86,6 @@ export async function addContributor({
 
   // Get README.md and modify it
   let readme = await getFile({
-    octokit,
     repo,
     path: "README.md",
     branch: defaultBranch,
@@ -103,8 +99,7 @@ export async function addContributor({
 
   // Update files
   await commit({
-    octokit,
-    ...repo,
+    repo,
     branch: defaultBranch,
     changes: [
       {

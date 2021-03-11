@@ -1,18 +1,19 @@
 import { CONTRIB_TO_FILETYPE } from "../../settings";
-import { OctokitClient } from "../../utils/types";
+import octokit from "@/utils/octokit";
+import { parseRepo, AnyRepo } from "@/utils/helpers";
 
 const isTranslatedRepo = (repoName: string) =>
   /^[a-z-]\.blitzjs\.com$/.test(repoName);
 
 export async function getContributions({
-  octokit,
-  repo,
+  repo: repository,
   pr,
 }: {
-  octokit: OctokitClient;
-  repo: { owner: string; repo: string };
+  repo: AnyRepo;
   pr: number;
 }): Promise<string[]> {
+  const repo = parseRepo(repository);
+
   const files = await octokit.pulls.listFiles({
     ...repo,
     pull_number: pr,

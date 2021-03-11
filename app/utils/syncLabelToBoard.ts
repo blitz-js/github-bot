@@ -1,14 +1,16 @@
-import type { EventPayloads } from "@octokit/webhooks";
-import type { OctokitClient } from "./types";
-import { Endpoints } from "@octokit/types";
-import { LABEL_TO_COLUMN } from "../settings";
+import { LABEL_TO_COLUMN } from "@/settings";
+import { PullRequest, Issue } from "@octokit/webhooks-definitions/schema";
+import { RestEndpointMethodTypes } from "@octokit/rest";
+import octokit from "@/utils/octokit";
+import log from "@/utils/log";
+import { parseRepo, AnyRepo } from "@/utils/helpers";
 
 type PRorIssue =
-  | Endpoints["GET /search/issues"]["response"]["data"]["items"][0]
-  | EventPayloads.WebhookPayloadPullRequestPullRequest
-  | EventPayloads.WebhookPayloadIssuesIssue;
+  | PullRequest
+  | Issue
+  | RestEndpointMethodTypes["search"]["issuesAndPullRequests"]["response"]["data"]["items"][0];
 
-const findCard = `
+const findCard = /* GraphQL */ `
   query FindCard($owner: String!, $repo: String!, $issue: Int!) {
     repository(owner: $owner, name: $repo) {
       issueOrPullRequest(number: $issue) {
@@ -36,31 +38,26 @@ const findCard = `
     }
   }
 `;
-// import nock from 'nock'
 
 interface SyncLabelToBoardArgs {
   prOrIssue: PRorIssue;
-  repo: EventPayloads.PayloadRepository;
+  repo: AnyRepo;
   isPR: boolean;
   newLabel: string;
-  octokit: OctokitClient;
 }
 
 export async function syncLabelToBoard({
   prOrIssue,
-  repo,
+  repo: repository,
   isPR,
   newLabel,
-  octokit,
 }: SyncLabelToBoardArgs) {
-  // nock.recorder.rec();
-  const repoId = {
-    owner: repo.owner.login,
-    repo: repo.name,
-  };
-  const projects = (await octokit.projects.listForRepo(repoId)).data;
+  const repo = parseRepo(repository);
+
+  const { data: projects } = await octokit.projects.listForRepo(repo);
+
   if (projects.length === 0) {
-    console.error("could not find a project board on this repo");
+    log.warn(`Could not find a project board on the repo ${repo}`);
     return;
   }
   const projectId = projects[0].id;
@@ -72,13 +69,19 @@ export async function syncLabelToBoard({
   const columnName = LABEL_TO_COLUMN[newLabel];
 
   // Get rid of other label(s) that start with status/
-  const otherLabels: string[] = (prOrIssue.labels as Array<{ name: string }>)
+  if (!prOrIssue.labels) {
+    log.warn(`Could not find labels on the repo ${repo}`);
+    return;
+  }
+
+  const otherLabels: string[] = prOrIssue.labels
     .map((l: { name: string }) => l.name)
     .filter((n) => n in LABEL_TO_COLUMN && n !== newLabel);
+
   await Promise.all(
     otherLabels.map((l) =>
       octokit.issues.removeLabel({
-        ...repoId,
+        ...repo,
         issue_number: prOrIssue.number,
         name: l,
       })
@@ -89,21 +92,27 @@ export async function syncLabelToBoard({
   const columns = await octokit.projects.listColumns({
     project_id: projectId,
   });
+
   const destColumn = columns.data.find((c) => c.name === columnName);
   if (destColumn === undefined) {
-    console.error("could not find corresponding column on project board");
+    log.warn(
+      `Could not find corresponding column "${columnName}" on project board of the repo ${repo}`
+    );
     return;
   }
 
   // Find the card on the project board.
   // GitHub REST API gives us no way to go from issue => card_id, but GraphQL does ;)
   const findCardResult: any = await octokit.graphql(findCard, {
-    ...repoId,
+    ...repo,
     issue: prOrIssue.number,
   });
+
   if (findCardResult === null) {
-    console.error(
-      "something went wrong with graphql to get project card from issue"
+    log.error(
+      "Something went wrong with graphql to get project card from issue",
+      `repo: ${repo}`,
+      `issue or pr: #${prOrIssue.number}`
     );
     return;
   }

@@ -1,10 +1,3 @@
-import app from "../app";
-import { createNodeMiddleware, createProbot } from "probot";
+import app from "@/app";
 
-const probot = createProbot({
-  defaults: {
-    webhookPath: "/api/webhooks",
-  },
-});
-
-export default createNodeMiddleware(app, { probot });
+export default app.middleware;

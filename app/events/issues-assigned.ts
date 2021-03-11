@@ -1,10 +1,10 @@
-import type { Handler } from "../utils/types";
+import type { EmitterWebhookEvent } from "@octokit/webhooks";
+import octokit from "@/utils/octokit";
 import { ASSIGNED_LABEL } from "../settings";
 
-export const issuesAssigned: Handler<"issues.assigned"> = async ({
+export const issuesAssigned = async ({
   payload,
-  octokit,
-}) => {
+}: EmitterWebhookEvent<"issues.assigned">) => {
   const totalAssignees = payload.issue.assignees.length;
   if (totalAssignees === 1) {
     await octokit.issues.addLabels({
