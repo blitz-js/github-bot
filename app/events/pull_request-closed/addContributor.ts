@@ -1,66 +1,65 @@
-import { CONTRIBUTIONS_SETTINGS } from "@/settings";
-import commit from "@/utils/commit";
-import octokit from "@/utils/octokit";
-import _ from "lodash";
-import { parseRepo, AnyRepo } from "@/utils/helpers";
-
+import {CONTRIBUTIONS_SETTINGS} from "@/settings"
+import commit from "@/utils/commit"
+import {AnyRepo, parseRepo} from "@/utils/helpers"
+import octokit from "@/utils/octokit"
 // @ts-expect-error
-import { addContributorWithDetails, generate } from "all-contributors-cli";
+import {addContributorWithDetails, generate} from "all-contributors-cli"
+import _ from "lodash"
 
 async function getFile({
   repo: repository,
   branch,
   path,
 }: {
-  repo: AnyRepo;
-  branch?: string;
-  path: string;
+  repo: AnyRepo
+  branch?: string
+  path: string
 }) {
-  const repo = parseRepo(repository);
+  const repo = parseRepo(repository)
 
-  const { data: file } = await octokit.repos.getContent({
+  const {data: file} = await octokit.repos.getContent({
     ...repo,
     ref: branch,
     path,
-  });
+  })
 
   if (Array.isArray(file) || !("content" in file)) {
-    throw new Error(`"${path}" not found in ${repo}:${branch}`);
+    throw new Error(`"${path}" not found in ${repo}:${branch}`)
   }
 
-  return Buffer.from(file.content, "base64").toString("utf-8");
+  return Buffer.from(file.content, "base64").toString("utf-8")
 }
 
 function englishArray(array: string[]): string {
-  let arr: string[] = Object.assign([], array);
+  let arr: string[] = Object.assign([], array)
 
-  if (arr.length === 0) return "";
-  if (arr.length === 1) return arr[0];
+  if (arr.length === 0) return ""
+  if (arr.length === 1) return arr[0]
 
-  const lastItem = arr.pop();
-  return arr.join(", ") + " and " + lastItem;
+  const lastItem = arr.pop()
+  return arr.join(", ") + " and " + lastItem
 }
 
 export async function addContributor({
   contributor,
   contributions,
 }: {
-  contributor: string;
-  contributions: string[];
+  contributor: string
+  contributions: string[]
 }) {
-  const { repo, defaultBranch } = CONTRIBUTIONS_SETTINGS;
+  const {repo, defaultBranch} = CONTRIBUTIONS_SETTINGS
 
   // Get contributor data
-  const { data: rawContributorData } = await octokit.users.getByUsername({
+  const {data: rawContributorData} = await octokit.users.getByUsername({
     username: contributor,
-  });
+  })
 
   const contributorData = {
     login: rawContributorData.login,
     name: rawContributorData.name || rawContributorData.login,
     avatar_url: rawContributorData.avatar_url,
     profile: rawContributorData.blog || rawContributorData.html_url,
-  };
+  }
 
   // Get .all-contributorsrc and modify it
   let allContributorsSrc = JSON.parse(
@@ -68,34 +67,29 @@ export async function addContributor({
       repo,
       path: ".all-contributorsrc",
       branch: defaultBranch,
-    })
-  );
+    }),
+  )
 
   const oldContributions: string[] =
-    allContributorsSrc.contributors.find((c: any) => c.login === contributor)
-      ?.contributions || [];
-  const newContributions = _.difference(contributions, oldContributions);
+    allContributorsSrc.contributors.find((c: any) => c.login === contributor)?.contributions || []
+  const newContributions = _.difference(contributions, oldContributions)
 
-  if (newContributions.length === 0) return;
+  if (newContributions.length === 0) return
 
   allContributorsSrc.contributors = await addContributorWithDetails({
     ...contributorData,
     options: allContributorsSrc,
     contributions: [...oldContributions, ...newContributions],
-  });
+  })
 
   // Get README.md and modify it
   let readme = await getFile({
     repo,
     path: "README.md",
     branch: defaultBranch,
-  });
+  })
 
-  readme = await generate(
-    allContributorsSrc,
-    allContributorsSrc.contributors,
-    readme
-  );
+  readme = await generate(allContributorsSrc, allContributorsSrc.contributors, readme)
 
   // Update files
   await commit({
@@ -113,9 +107,7 @@ export async function addContributor({
         },
       },
     ],
-  });
+  })
 
-  return `Added @${contributor} contributions for ${englishArray(
-    newContributions
-  )}`;
+  return `Added @${contributor} contributions for ${englishArray(newContributions)}`
 }

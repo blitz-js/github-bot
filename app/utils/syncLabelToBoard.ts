@@ -1,14 +1,14 @@
-import { LABEL_TO_COLUMN } from "@/settings";
-import { PullRequest, Issue } from "@octokit/webhooks-definitions/schema";
-import { RestEndpointMethodTypes } from "@octokit/rest";
-import octokit from "@/utils/octokit";
-import log from "@/utils/log";
-import { parseRepo, AnyRepo } from "@/utils/helpers";
+import {LABEL_TO_COLUMN} from "@/settings"
+import {AnyRepo, parseRepo} from "@/utils/helpers"
+import log from "@/utils/log"
+import octokit from "@/utils/octokit"
+import {RestEndpointMethodTypes} from "@octokit/rest"
+import {Issue, PullRequest} from "@octokit/webhooks-definitions/schema"
 
 type PRorIssue =
   | PullRequest
   | Issue
-  | RestEndpointMethodTypes["search"]["issuesAndPullRequests"]["response"]["data"]["items"][0];
+  | RestEndpointMethodTypes["search"]["issuesAndPullRequests"]["response"]["data"]["items"][0]
 
 const findCard = /* GraphQL */ `
   query FindCard($owner: String!, $repo: String!, $issue: Int!) {
@@ -37,13 +37,13 @@ const findCard = /* GraphQL */ `
       }
     }
   }
-`;
+`
 
 interface SyncLabelToBoardArgs {
-  prOrIssue: PRorIssue;
-  repo: AnyRepo;
-  isPR: boolean;
-  newLabel: string;
+  prOrIssue: PRorIssue
+  repo: AnyRepo
+  isPR: boolean
+  newLabel: string
 }
 
 export async function syncLabelToBoard({
@@ -52,31 +52,31 @@ export async function syncLabelToBoard({
   isPR,
   newLabel,
 }: SyncLabelToBoardArgs) {
-  const repo = parseRepo(repository);
+  const repo = parseRepo(repository)
 
-  const { data: projects } = await octokit.projects.listForRepo(repo);
+  const {data: projects} = await octokit.projects.listForRepo(repo)
 
   if (projects.length === 0) {
-    log.warn(`Could not find a project board on the repo ${repo}`);
-    return;
+    log.warn(`Could not find a project board on the repo ${repo}`)
+    return
   }
-  const projectId = projects[0].id;
+  const projectId = projects[0].id
 
   // Get new status label
   if (!(newLabel in LABEL_TO_COLUMN)) {
-    return;
+    return
   }
-  const columnName = LABEL_TO_COLUMN[newLabel];
+  const columnName = LABEL_TO_COLUMN[newLabel]
 
   // Get rid of other label(s) that start with status/
   if (!prOrIssue.labels) {
-    log.warn(`Could not find labels on the repo ${repo}`);
-    return;
+    log.warn(`Could not find labels on the repo ${repo}`)
+    return
   }
 
   const otherLabels: string[] = prOrIssue.labels
-    .map((l: { name: string }) => l.name)
-    .filter((n) => n in LABEL_TO_COLUMN && n !== newLabel);
+    .map((l: {name: string}) => l.name)
+    .filter((n) => n in LABEL_TO_COLUMN && n !== newLabel)
 
   await Promise.all(
     otherLabels.map((l) =>
@@ -84,21 +84,21 @@ export async function syncLabelToBoard({
         ...repo,
         issue_number: prOrIssue.number,
         name: l,
-      })
-    )
-  );
+      }),
+    ),
+  )
 
   // Find the corresponding column to move to
   const columns = await octokit.projects.listColumns({
     project_id: projectId,
-  });
+  })
 
-  const destColumn = columns.data.find((c) => c.name === columnName);
+  const destColumn = columns.data.find((c) => c.name === columnName)
   if (destColumn === undefined) {
     log.warn(
-      `Could not find corresponding column "${columnName}" on project board of the repo ${repo}`
-    );
-    return;
+      `Could not find corresponding column "${columnName}" on project board of the repo ${repo}`,
+    )
+    return
   }
 
   // Find the card on the project board.
@@ -106,30 +106,30 @@ export async function syncLabelToBoard({
   const findCardResult: any = await octokit.graphql(findCard, {
     ...repo,
     issue: prOrIssue.number,
-  });
+  })
 
   if (findCardResult === null) {
     log.error(
       "Something went wrong with graphql to get project card from issue",
       `repo: ${repo}`,
-      `issue or pr: #${prOrIssue.number}`
-    );
-    return;
+      `issue or pr: #${prOrIssue.number}`,
+    )
+    return
   }
-  const card = findCardResult.repository.issueOrPullRequest.projectCards.nodes.pop();
+  const card = findCardResult.repository.issueOrPullRequest.projectCards.nodes.pop()
   if (card === undefined) {
     // create card on board
     await octokit.projects.createCard({
       column_id: destColumn.id,
       content_id: prOrIssue.id,
       content_type: isPR ? "PullRequest" : "Issue",
-    });
+    })
   } else if (card.column === null || card.column.databaseId !== destColumn.id) {
     // move card only if not already in the right column
     await octokit.projects.moveCard({
       card_id: card.databaseId,
       column_id: destColumn.id,
       position: "top",
-    });
+    })
   }
 }

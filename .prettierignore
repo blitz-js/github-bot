@@ -1,0 +1,6 @@
+.husky
+.vercel
+.yarn
+.pnp.js
+
+node_modules

@@ -1,6 +1,6 @@
-import log4js from "log4js";
+import log4js from "log4js"
 
-const logger = log4js.getLogger();
-logger.level = process.env.LOG_LEVEL || "warn";
+const logger = log4js.getLogger()
+logger.level = process.env.LOG_LEVEL || "warn"
 
-export default logger;
+export default logger

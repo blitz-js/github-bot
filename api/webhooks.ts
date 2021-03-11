@@ -1,3 +1,3 @@
-import app from "@/app";
+import app from "@/app"
 
-export default app.middleware;
+export default app.middleware
