@@ -1,9 +1,9 @@
-import {WHOAMI} from "@/settings"
-import {addContributor} from "@/utils/addContributor"
-import {parseRepo} from "@/utils/helpers"
-import log from "@/utils/log"
-import octokit from "@/utils/octokit"
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
+import {WHOAMI} from "../../settings"
+import {addContributor} from "../../utils/addContributor"
+import {parseRepo} from "../../utils/helpers"
+import log from "../../utils/log"
+import octokit from "../../utils/octokit"
 import {getContributions} from "./getContributions"
 
 export const pull_requestClosed = async ({

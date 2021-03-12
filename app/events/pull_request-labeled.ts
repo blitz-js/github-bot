@@ -1,5 +1,5 @@
-import {syncLabelToBoard} from "@/utils/syncLabelToBoard"
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
+import {syncLabelToBoard} from "../utils/syncLabelToBoard"
 
 // graphql
 // Sync labels => project board

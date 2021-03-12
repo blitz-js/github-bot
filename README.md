@@ -22,7 +22,7 @@ yarn
 
 ### Developing locally
 
-When developing locally, you need to get a new [Smee URL](https://smee.io/new) and set the **Webhook URL** of your GitHub app (inside the github config) to that Smee URL. Finally, you run this to run your app (make sure to have the Vercel CLI installed):
+When developing locally, you need to get a new [Smee URL](https://smee.io/new) and set the **Webhook URL** to that Smee URL. Finally, you run this to run your app (make sure to have the Vercel CLI installed):
 
 ```bash
 ./scripts/run-dev.sh [your-smee-url]

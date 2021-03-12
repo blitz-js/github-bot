@@ -1,7 +1,7 @@
-import {LABEL_TO_COLUMN} from "@/settings"
-import octokit from "@/utils/octokit"
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
 import {findKey} from "lodash"
+import {LABEL_TO_COLUMN} from "../settings"
+import octokit from "../utils/octokit"
 
 // Sync project board => labels
 export const project_cardMoved = async ({

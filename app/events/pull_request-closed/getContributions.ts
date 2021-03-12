@@ -1,6 +1,6 @@
-import {CONTRIB_TO_FILETYPE} from "@/settings"
-import {AnyRepo, parseRepo} from "@/utils/helpers"
-import octokit from "@/utils/octokit"
+import {CONTRIB_TO_FILETYPE} from "../../settings"
+import {AnyRepo, parseRepo} from "../../utils/helpers"
+import octokit from "../../utils/octokit"
 
 const isTranslatedRepo = (repoName: string) => /^[a-z-]+\.blitzjs\.com$/.test(repoName)
 

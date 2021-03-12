@@ -1,6 +1,6 @@
-import {IN_PROGRESS_LABEL, IN_REVIEW_LABEL} from "@/settings"
-import octokit from "@/utils/octokit"
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
+import {IN_PROGRESS_LABEL, IN_REVIEW_LABEL} from "../settings"
+import octokit from "../utils/octokit"
 
 // Move pull request around based on draft status
 export const pull_requestOpened = async ({

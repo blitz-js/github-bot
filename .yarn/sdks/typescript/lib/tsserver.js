@@ -1,23 +1,21 @@
 #!/usr/bin/env node
 
-const { existsSync } = require(`fs`);
-const { createRequire, createRequireFromPath } = require(`module`);
-const { resolve } = require(`path`);
+const {existsSync} = require(`fs`);
+const {createRequire, createRequireFromPath} = require(`module`);
+const {resolve} = require(`path`);
 
 const relPnpApiPath = "../../../../.pnp.js";
 
 const absPnpApiPath = resolve(__dirname, relPnpApiPath);
 const absRequire = (createRequire || createRequireFromPath)(absPnpApiPath);
 
-const moduleWrapper = (tsserver) => {
-  const { isAbsolute } = require(`path`);
+const moduleWrapper = tsserver => {
+  const {isAbsolute} = require(`path`);
   const pnpApi = require(`pnpapi`);
 
-  const dependencyTreeRoots = new Set(
-    pnpApi.getDependencyTreeRoots().map((locator) => {
-      return `${locator.name}@${locator.reference}`;
-    })
-  );
+  const dependencyTreeRoots = new Set(pnpApi.getDependencyTreeRoots().map(locator => {
+    return `${locator.name}@${locator.reference}`;
+  }));
 
   // VSCode sends the zip paths to TS using the "zip://" prefix, that TS
   // doesn't understand. This layer makes sure to remove the protocol
@@ -25,11 +23,7 @@ const moduleWrapper = (tsserver) => {
 
   function toEditorPath(str) {
     // We add the `zip:` prefix to both `.zip/` paths and virtual paths
-    if (
-      isAbsolute(str) &&
-      !str.match(/^\^zip:/) &&
-      (str.match(/\.zip\//) || str.match(/\$\$virtual\//))
-    ) {
+    if (isAbsolute(str) && !str.match(/^\^zip:/) && (str.match(/\.zip\//) || str.match(/\$\$virtual\//))) {
       // We also take the opportunity to turn virtual paths into physical ones;
       // this makes is much easier to work with workspaces that list peer
       // dependencies, since otherwise Ctrl+Click would bring us to the virtual
@@ -43,15 +37,12 @@ const moduleWrapper = (tsserver) => {
       const resolved = pnpApi.resolveVirtual(str);
       if (resolved) {
         const locator = pnpApi.findPackageLocator(resolved);
-        if (
-          locator &&
-          dependencyTreeRoots.has(`${locator.name}@${locator.reference}`)
-        ) {
-          str = resolved;
+        if (locator && dependencyTreeRoots.has(`${locator.name}@${locator.reference}`)) {
+         str = resolved;
         }
       }
 
-      str = str.replace(/\\/g, `/`);
+      str = str.replace(/\\/g, `/`)
       str = str.replace(/^\/?/, `/`);
 
       // Absolute VSCode `Uri.fsPath`s need to start with a slash.
@@ -80,15 +71,12 @@ const moduleWrapper = (tsserver) => {
   // like an absolute path of ours and normalize it.
 
   const Session = tsserver.server.Session;
-  const {
-    onMessage: originalOnMessage,
-    send: originalSend,
-  } = Session.prototype;
+  const {onMessage: originalOnMessage, send: originalSend} = Session.prototype;
   let isVSCode = false;
 
   return Object.assign(Session.prototype, {
     onMessage(/** @type {string} */ message) {
-      const parsedMessage = JSON.parse(message);
+      const parsedMessage = JSON.parse(message)
 
       if (
         parsedMessage != null &&
@@ -99,24 +87,16 @@ const moduleWrapper = (tsserver) => {
         isVSCode = true;
       }
 
-      return originalOnMessage.call(
-        this,
-        JSON.stringify(parsedMessage, (key, value) => {
-          return typeof value === `string` ? fromEditorPath(value) : value;
-        })
-      );
+      return originalOnMessage.call(this, JSON.stringify(parsedMessage, (key, value) => {
+        return typeof value === `string` ? fromEditorPath(value) : value;
+      }));
     },
 
     send(/** @type {any} */ msg) {
-      return originalSend.call(
-        this,
-        JSON.parse(
-          JSON.stringify(msg, (key, value) => {
-            return typeof value === `string` ? toEditorPath(value) : value;
-          })
-        )
-      );
-    },
+      return originalSend.call(this, JSON.parse(JSON.stringify(msg, (key, value) => {
+        return typeof value === `string` ? toEditorPath(value) : value;
+      })));
+    }
   });
 };
 

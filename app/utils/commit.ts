@@ -1,5 +1,5 @@
-import {AnyRepo, ParsedRepo, parseRepo} from "@/utils/helpers"
-import octokit from "@/utils/octokit"
+import {AnyRepo, ParsedRepo, parseRepo} from "./helpers"
+import octokit from "./octokit"
 
 // Adapted from
 // https://github.com/mheap/octokit-commit-multiple-files

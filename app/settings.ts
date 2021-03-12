@@ -1,4 +1,4 @@
-import {parseRepo} from "@/utils/helpers"
+import {parseRepo} from "./utils/helpers"
 
 export const WHOAMI = "blitzjs-bot"
 export const ENDPOINT = "https://github-bot.blitzjs.com/api/webhooks"

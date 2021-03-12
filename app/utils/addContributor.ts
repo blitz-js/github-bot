@@ -1,10 +1,10 @@
-import {CONTRIBUTIONS_SETTINGS} from "@/settings"
-import commit from "@/utils/commit"
-import {AnyRepo, parseRepo} from "@/utils/helpers"
-import octokit from "@/utils/octokit"
 // @ts-expect-error
 import {addContributorWithDetails, generate} from "all-contributors-cli"
 import _ from "lodash"
+import {CONTRIBUTIONS_SETTINGS} from "../settings"
+import commit from "./commit"
+import {AnyRepo, parseRepo} from "./helpers"
+import octokit from "./octokit"
 
 async function getFile({
   repo: repository,

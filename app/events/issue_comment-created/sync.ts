@@ -1,8 +1,8 @@
-import {LABEL_TO_COLUMN, TRIAGE_LABEL} from "@/settings"
-import {ParsedRepo, parseRepo, trimMultiLine} from "@/utils/helpers"
-import octokit from "@/utils/octokit"
-import {syncLabelToBoard} from "@/utils/syncLabelToBoard"
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
+import {LABEL_TO_COLUMN, TRIAGE_LABEL} from "../../settings"
+import {ParsedRepo, parseRepo, trimMultiLine} from "../../utils/helpers"
+import octokit from "../../utils/octokit"
+import {syncLabelToBoard} from "../../utils/syncLabelToBoard"
 
 type Payload = EmitterWebhookEvent<"issue_comment.created">["payload"]
 

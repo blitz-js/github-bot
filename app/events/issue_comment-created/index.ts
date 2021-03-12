@@ -1,6 +1,6 @@
-import {COMMAND_PREFIXES, CONTRIBUTIONS_SETTINGS} from "@/settings"
-import octokit from "@/utils/octokit"
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
+import {COMMAND_PREFIXES, CONTRIBUTIONS_SETTINGS} from "../../settings"
+import octokit from "../../utils/octokit"
 import {addContributorManually, addContributorRegex} from "./addContributorManually"
 import {sync, syncConfirm} from "./sync"
 

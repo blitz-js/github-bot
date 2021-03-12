@@ -1,5 +1,5 @@
-import {syncLabelToBoard} from "@/utils/syncLabelToBoard"
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
+import {syncLabelToBoard} from "../utils/syncLabelToBoard"
 
 // Sync labels => project board
 export const issuesLabeled = async ({payload}: EmitterWebhookEvent<"issues.labeled">) => {

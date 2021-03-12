@@ -1,8 +1,8 @@
-import {addContributor} from "@/utils/addContributor"
-import {parseRepo} from "@/utils/helpers"
-import log from "@/utils/log"
-import octokit from "@/utils/octokit"
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
+import {addContributor} from "../../utils/addContributor"
+import {parseRepo} from "../../utils/helpers"
+import log from "../../utils/log"
+import octokit from "../../utils/octokit"
 
 type Payload = EmitterWebhookEvent<"issue_comment.created">["payload"]
 

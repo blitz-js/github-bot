@@ -1,6 +1,6 @@
-import {LABEL_TO_COLUMN, TRIAGE_LABEL} from "@/settings"
-import {syncLabelToBoard} from "@/utils/syncLabelToBoard"
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
+import {LABEL_TO_COLUMN, TRIAGE_LABEL} from "../settings"
+import {syncLabelToBoard} from "../utils/syncLabelToBoard"
 
 // Add Triage label when an issue is opened
 export const issuesOpened = async ({payload}: EmitterWebhookEvent<"issues.opened">) => {

@@ -1,9 +1,9 @@
-import {LABEL_TO_COLUMN} from "@/settings"
-import {AnyRepo, parseRepo} from "@/utils/helpers"
-import log from "@/utils/log"
-import octokit from "@/utils/octokit"
 import {RestEndpointMethodTypes} from "@octokit/rest"
 import {Issue, PullRequest} from "@octokit/webhooks-definitions/schema"
+import {LABEL_TO_COLUMN} from "../settings"
+import {AnyRepo, parseRepo} from "./helpers"
+import log from "./log"
+import octokit from "./octokit"
 
 type PRorIssue =
   | PullRequest

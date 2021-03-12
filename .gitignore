@@ -1,6 +1,5 @@
 .env
 .vercel
-dist
 
 # Yarn
 .yarn/*

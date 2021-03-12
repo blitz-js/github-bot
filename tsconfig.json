@@ -6,15 +6,9 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/events/*": ["app/events/*"],
-      "@/settings": ["app/settings.ts"],
-      "@/utils/*": ["app/utils/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["types.d.ts", "app/**/*.ts"],
+  "include": ["types.d.ts", "app/**/*.ts", "api/**/*.ts"],
   "exclude": ["node_modules"],
   "compileOnSave": false
 }
