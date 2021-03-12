@@ -1,3 +1,7 @@
+import {parseRepo} from "@/utils/helpers"
+
+export const WHOAMI = "blitzjs-bot"
+
 export const TRIAGE_LABEL = "status/triage"
 export const IN_PROGRESS_LABEL = "status/in-progress"
 export const IN_REVIEW_LABEL = "status/in-review"
@@ -22,6 +26,8 @@ export const CONTRIB_TO_FILETYPE: Record<string, string[]> = {
 }
 
 export const CONTRIBUTIONS_SETTINGS = {
-  repo: {owner: "blitz-js", repo: "blitz"},
+  repo: parseRepo({owner: "blitz-js", repo: "blitz"}),
   defaultBranch: "canary",
 }
+
+export const COMMAND_PREFIXES = ["@blitzjs-bot", "blitzjs-bot", "blitz-bot", "blitz bot"]

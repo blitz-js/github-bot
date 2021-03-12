@@ -1,8 +1,9 @@
+import {WHOAMI} from "@/settings"
+import {addContributor} from "@/utils/addContributor"
 import {parseRepo} from "@/utils/helpers"
 import log from "@/utils/log"
 import octokit from "@/utils/octokit"
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
-import {addContributor} from "./addContributor"
 import {getContributions} from "./getContributions"
 
 export const pull_requestClosed = async ({
@@ -10,7 +11,7 @@ export const pull_requestClosed = async ({
 }: EmitterWebhookEvent<"pull_request.closed">) => {
   const repo = parseRepo(repository)
 
-  const isBot = pull_request.user.type.toLowerCase() === "bot"
+  const isBot = pull_request.user.type.toLowerCase() === "bot" || pull_request.user.login === WHOAMI
   const isTargetDefaultBranch = pull_request.head.repo.default_branch === pull_request.base.ref
   const fileChanged = pull_request.changed_files
   const wasMerged = pull_request.merged
