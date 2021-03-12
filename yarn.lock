@@ -1391,6 +1391,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vercel/ncc@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "@vercel/ncc@npm:0.27.0"
+  dependencies:
+    node-gyp: latest
+  bin:
+    ncc: dist/ncc/cli.js
+  checksum: ce8fbde30502da756b804b81e5203031a227a42d175c654381f36d81417d1ba2c06fd2ffc2514a61beb44bfd361b443a454f688cc4a98eeccd300bc5558c4e9a
+  languageName: node
+  linkType: hard
+
 "abab@npm:^2.0.3":
   version: 2.0.5
   resolution: "abab@npm:2.0.5"
@@ -1885,6 +1896,7 @@ __metadata:
     "@types/node": ^14.14.31
     "@typescript-eslint/eslint-plugin": ^4.17.0
     "@typescript-eslint/parser": ^4.17.0
+    "@vercel/ncc": ^0.27.0
     all-contributors-cli: ^6.20.0
     concurrently: ^6.0.0
     eslint: ^7.21.0

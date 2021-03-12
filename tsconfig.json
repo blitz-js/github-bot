@@ -9,13 +9,12 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/app": ["app/index.ts"],
       "@/events/*": ["app/events/*"],
       "@/settings": ["app/settings.ts"],
       "@/utils/*": ["app/utils/*"]
     }
   },
-  "include": ["types.d.ts", "app/**/*.ts", "api/**/*.ts"],
+  "include": ["types.d.ts", "app/**/*.ts"],
   "exclude": ["node_modules"],
   "compileOnSave": false
 }

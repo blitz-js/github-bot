@@ -18,6 +18,7 @@
   "homepage": "https://github.com/blitz-js/bot-github",
   "bugs": "https://github.com/blitz-js/bot-github/issues",
   "scripts": {
+    "build": "ncc build app/index.ts --target es2020",
     "test": "jest",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage",
     "postinstall": "husky install"
@@ -37,6 +38,7 @@
     "@types/node": "^14.14.31",
     "@typescript-eslint/eslint-plugin": "^4.17.0",
     "@typescript-eslint/parser": "^4.17.0",
+    "@vercel/ncc": "^0.27.0",
     "concurrently": "^6.0.0",
     "eslint": "^7.21.0",
     "eslint-plugin-import": "^2.22.1",

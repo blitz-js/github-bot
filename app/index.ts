@@ -32,4 +32,4 @@ app.on(["pull_request.opened", "pull_request.ready_for_review"], pull_requestOpe
 // Organization events
 app.on("repository.created", repositoryCreated)
 
-export default app
+export default app.middleware
