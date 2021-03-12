@@ -15,7 +15,7 @@
       "@/utils/*": ["app/utils/*"]
     }
   },
-  "include": ["app/**/*.ts", "api/**/*.ts"],
+  "include": ["types.d.ts", "app/**/*.ts", "api/**/*.ts"],
   "exclude": ["node_modules"],
   "compileOnSave": false
 }

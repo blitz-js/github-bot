@@ -6,7 +6,7 @@ import type {EmitterWebhookEvent} from "@octokit/webhooks"
 
 type Payload = EmitterWebhookEvent<"issue_comment.created">["payload"]
 
-export const addContributorRegex = /^add contributor @?[a-zA-Z-_0-9] \w(,? \w)?$/i
+export const addContributorRegex = /^add contributor @?[a-zA-Z-_0-9]+ \w+(,? \w+)*$/i
 
 export const addContributorManually = async (payload: Payload, command: string) => {
   command = command.substr(16) // legth of "add contributor"

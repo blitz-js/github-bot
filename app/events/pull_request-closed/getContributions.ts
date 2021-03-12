@@ -2,7 +2,7 @@ import {CONTRIB_TO_FILETYPE} from "@/settings"
 import {AnyRepo, parseRepo} from "@/utils/helpers"
 import octokit from "@/utils/octokit"
 
-const isTranslatedRepo = (repoName: string) => /^[a-z-]\.blitzjs\.com$/.test(repoName)
+const isTranslatedRepo = (repoName: string) => /^[a-z-]+\.blitzjs\.com$/.test(repoName)
 
 export async function getContributions({
   repo: repository,
@@ -12,6 +12,8 @@ export async function getContributions({
   pr: number
 }): Promise<string[]> {
   const repo = parseRepo(repository)
+
+  if (isTranslatedRepo(repo.repo)) return ["translation"]
 
   const files = await octokit.pulls.listFiles({
     ...repo,
@@ -33,8 +35,6 @@ export async function getContributions({
       })
     })
   }
-
-  if (isTranslatedRepo(repo.repo)) contributions.push("translation")
 
   return contributions
 }
