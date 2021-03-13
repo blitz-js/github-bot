@@ -1,6 +1,7 @@
 import {Webhooks} from "@octokit/webhooks"
 import {issue_commentCreated} from "./events/issue_comment-created"
 import {issuesAssigned} from "./events/issues-assigned"
+import {issuesClosed} from "./events/issues-closed"
 import {issuesLabeled} from "./events/issues-labeled"
 import {issuesOpened} from "./events/issues-opened"
 import {project_cardMoved} from "./events/project_card-moved"
@@ -24,6 +25,7 @@ app.onAny((event) => {
 // Repository events
 app.on("issue_comment.created", issue_commentCreated)
 app.on("issues.assigned", issuesAssigned)
+app.on(["issues.closed", "pull_request.closed"], issuesClosed)
 app.on("issues.labeled", issuesLabeled)
 app.on("issues.opened", issuesOpened)
 app.on(["project_card.moved", "project_card.created"], project_cardMoved)

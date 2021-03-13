@@ -1,4 +1,4 @@
-import {Repository} from "@octokit/webhooks-definitions/schema"
+import type {Repository} from "@octokit/webhooks-definitions/schema"
 
 export type ParsedRepo = {owner: string; repo: string; toString(): string}
 export type AnyRepo = Repository | ParsedRepo

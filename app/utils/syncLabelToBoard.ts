@@ -1,5 +1,5 @@
-import {RestEndpointMethodTypes} from "@octokit/rest"
-import {Issue, PullRequest} from "@octokit/webhooks-definitions/schema"
+import type {RestEndpointMethodTypes} from "@octokit/rest"
+import type {Issue, PullRequest} from "@octokit/webhooks-definitions/schema"
 import {LABEL_TO_COLUMN} from "../settings"
 import {AnyRepo, parseRepo} from "./helpers"
 import log from "./log"

@@ -7,6 +7,7 @@ export const TRIAGE_LABEL = "status/triage"
 export const IN_PROGRESS_LABEL = "status/in-progress"
 export const IN_REVIEW_LABEL = "status/in-review"
 export const ASSIGNED_LABEL = "status/assigned"
+export const DONE_LABEL = "status/done"
 
 export const LABEL_TO_COLUMN: Record<string, string> = {
   "status/icebox": "Icebox",
@@ -17,7 +18,7 @@ export const LABEL_TO_COLUMN: Record<string, string> = {
   [ASSIGNED_LABEL]: "Assigned",
   [IN_PROGRESS_LABEL]: "In Progress",
   [IN_REVIEW_LABEL]: "In Review",
-  "status/done": "Done",
+  [DONE_LABEL]: "Done",
 }
 
 export const LABEL_TO_COLOR: Record<string, string> = {
