@@ -26,7 +26,7 @@ app.onAny((event) => {
 app.on("issue_comment.created", issue_commentCreated)
 app.on("issues.assigned", issuesAssigned)
 app.on(["issues.closed", "pull_request.closed"], issuesClosed)
-app.on("issues.labeled", issuesLabeled)
+app.on(["issues.labeled", "pull_request.labeled"], issuesLabeled)
 app.on("issues.opened", issuesOpened)
 app.on(["project_card.moved", "project_card.created"], project_cardMoved)
 app.on("pull_request.closed", pull_requestClosed)

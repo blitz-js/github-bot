@@ -1,4 +1,4 @@
-import type {Repository} from "@octokit/webhooks-definitions/schema"
+import type {IssuesEvent, PullRequestEvent, Repository} from "@octokit/webhooks-definitions/schema"
 
 export type AnyRepo = Repository | ParsedRepo
 
@@ -40,3 +40,6 @@ export const trimMultiLine = (str: string, fixedIdent?: number) => {
 
   return lines.join("\n")
 }
+
+export const payloadIsIssue = (payload: IssuesEvent | PullRequestEvent): payload is IssuesEvent =>
+  "issue" in payload
