@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["types.d.ts", "app/**/*.ts", "api/**/*.ts"],
+  "include": ["types.ts", "**/*.ts"],
   "exclude": ["node_modules"],
   "compileOnSave": false
 }

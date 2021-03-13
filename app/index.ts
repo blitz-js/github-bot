@@ -11,6 +11,10 @@ import {pull_requestOpened} from "./events/pull_request-opened"
 import {repositoryCreated} from "./events/repository-created"
 import log from "./utils/log"
 
+if (!process.env.WEBHOOK_SECRET) {
+  throw new Error("Webhook Secret not found")
+}
+
 const app = new Webhooks({
   secret: process.env.WEBHOOK_SECRET,
   path: "/api/webhooks",
