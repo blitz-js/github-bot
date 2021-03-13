@@ -12,6 +12,8 @@ import log from "./utils/log"
 
 const app = new Webhooks({
   secret: process.env.WEBHOOK_SECRET,
+  path: "/api/webhooks",
+  log,
 })
 
 app.onAny((event) => {
