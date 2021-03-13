@@ -1,6 +1,6 @@
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
 import {LABEL_TO_COLUMN, TRIAGE_LABEL} from "../../settings"
-import {ParsedRepo, parseRepo, trimMultiLine} from "../../utils/helpers"
+import {ParsedRepo, trimMultiLine} from "../../utils/helpers"
 import octokit from "../../utils/octokit"
 import {syncLabelToBoard} from "../../utils/syncLabelToBoard"
 
@@ -14,7 +14,7 @@ const getIssuesToFix = async (repo: ParsedRepo) => {
 }
 
 export const sync = async (payload: Payload) => {
-  const repo = parseRepo(payload.repository)
+  const repo = ParsedRepo.fromFullRepo(payload.repository)
 
   const issuesToFix = await getIssuesToFix(repo)
 
@@ -39,7 +39,7 @@ export const sync = async (payload: Payload) => {
 }
 
 export const syncConfirm = async (payload: Payload) => {
-  const repo = parseRepo(payload.repository)
+  const repo = ParsedRepo.fromFullRepo(payload.repository)
   const issuesToFix = await getIssuesToFix(repo)
 
   await Promise.all(

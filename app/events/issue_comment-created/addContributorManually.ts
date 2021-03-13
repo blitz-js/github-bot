@@ -1,6 +1,6 @@
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
 import {addContributor} from "../../utils/addContributor"
-import {parseRepo} from "../../utils/helpers"
+import {ParsedRepo} from "../../utils/helpers"
 import log from "../../utils/log"
 import octokit from "../../utils/octokit"
 
@@ -26,9 +26,10 @@ export const addContributorManually = async (payload: Payload, command: string) 
 
   if (contributionMsg) {
     log.info(contributionMsg)
+    const repo = ParsedRepo.fromFullRepo(payload.repository)
 
     await octokit.issues.createComment({
-      ...parseRepo(payload.repository),
+      ...repo,
       issue_number: payload.issue.number,
       body: contributionMsg,
     })

@@ -1,11 +1,11 @@
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
 import {ENDPOINT, LABEL_TO_COLOR, LABEL_TO_COLUMN} from "../settings"
-import {parseRepo} from "../utils/helpers"
+import {ParsedRepo} from "../utils/helpers"
 import octokit from "../utils/octokit"
 
 // Add webhooks to repo
 export const repositoryCreated = async ({payload}: EmitterWebhookEvent<"repository.created">) => {
-  const repo = parseRepo(payload.repository)
+  const repo = ParsedRepo.fromFullRepo(payload.repository)
 
   const {data: project} = await octokit.projects.createForRepo({
     ...repo,

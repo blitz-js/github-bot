@@ -1,17 +1,29 @@
 import type {Repository} from "@octokit/webhooks-definitions/schema"
 
-export type ParsedRepo = {owner: string; repo: string; toString(): string}
 export type AnyRepo = Repository | ParsedRepo
 
-const repoIsParsed = (repo: AnyRepo): repo is ParsedRepo => typeof repo.owner === "string"
+export class ParsedRepo {
+  owner: string
+  repo: string
 
-export const parseRepo = (repo: AnyRepo): ParsedRepo => ({
-  owner: repoIsParsed(repo) ? repo.owner : repo.owner.login,
-  repo: repoIsParsed(repo) ? repo.repo : repo.name,
+  constructor(owner: string, repo: string) {
+    this.owner = owner
+    this.repo = repo
+  }
+
   toString() {
     return `${this.owner}/${this.repo}`
-  },
-})
+  }
+
+  static fromFullRepo(repo: Repository) {
+    return new ParsedRepo(repo.owner.login, repo.name)
+  }
+
+  static fromAnyRepo(repo: AnyRepo) {
+    if (repo instanceof ParsedRepo) return repo
+    else return ParsedRepo.fromFullRepo(repo)
+  }
+}
 
 export const trimMultiLine = (str: string, fixedIdent?: number) => {
   let lines = str.trim().split("\n")

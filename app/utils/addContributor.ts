@@ -3,7 +3,7 @@ import {addContributorWithDetails, generate} from "all-contributors-cli"
 import _ from "lodash"
 import {CONTRIBUTIONS_SETTINGS} from "../settings"
 import commit from "./commit"
-import {AnyRepo, parseRepo} from "./helpers"
+import {AnyRepo, ParsedRepo} from "./helpers"
 import octokit from "./octokit"
 
 async function getFile({
@@ -15,7 +15,7 @@ async function getFile({
   branch?: string
   path: string
 }) {
-  const repo = parseRepo(repository)
+  const repo = ParsedRepo.fromAnyRepo(repository)
 
   const {data: file} = await octokit.repos.getContent({
     ...repo,

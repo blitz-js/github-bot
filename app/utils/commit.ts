@@ -1,4 +1,4 @@
-import {AnyRepo, ParsedRepo, parseRepo} from "./helpers"
+import {AnyRepo, ParsedRepo} from "./helpers"
 import octokit from "./octokit"
 
 // Adapted from
@@ -24,8 +24,8 @@ export default async function commit(args: {
     date?: string
   }
 }) {
+  const repo = ParsedRepo.fromAnyRepo(args.repo)
   const {branch: branchName, changes, committer} = args
-  const repo = parseRepo(args.repo)
 
   // Check for empty commits
   for (const change of changes) {

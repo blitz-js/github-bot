@@ -1,5 +1,5 @@
 import {CONTRIB_TO_FILETYPE} from "../../settings"
-import {AnyRepo, parseRepo} from "../../utils/helpers"
+import {AnyRepo, ParsedRepo} from "../../utils/helpers"
 import octokit from "../../utils/octokit"
 
 const isTranslatedRepo = (repoName: string) => /^[a-z-]+\.blitzjs\.com$/.test(repoName)
@@ -11,7 +11,7 @@ export async function getContributions({
   repo: AnyRepo
   pr: number
 }): Promise<string[]> {
-  const repo = parseRepo(repository)
+  const repo = ParsedRepo.fromAnyRepo(repository)
 
   if (isTranslatedRepo(repo.repo)) return ["translation"]
 

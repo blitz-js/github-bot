@@ -1,4 +1,4 @@
-import {parseRepo} from "./utils/helpers"
+import {ParsedRepo} from "./utils/helpers"
 
 export const WHOAMI = "blitzjs-bot"
 export const ENDPOINT = "https://github-bot.blitzjs.com/api/webhooks"
@@ -30,7 +30,7 @@ export const LABEL_TO_COLOR: Record<string, string> = {
   [ASSIGNED_LABEL]: "#baf9a7",
   [IN_PROGRESS_LABEL]: "#f1fc9f",
   [IN_REVIEW_LABEL]: "#8bef8b",
-  "status/done": "#4ec641",
+  [DONE_LABEL]: "#4ec641",
 }
 
 export const CONTRIB_TO_FILETYPE: Record<string, string[]> = {
@@ -40,7 +40,7 @@ export const CONTRIB_TO_FILETYPE: Record<string, string[]> = {
 }
 
 export const CONTRIBUTIONS_SETTINGS = {
-  repo: parseRepo({owner: "blitz-js", repo: "blitz"}),
+  repo: new ParsedRepo("blitz-js", "blitz"),
   defaultBranch: "canary",
 }
 

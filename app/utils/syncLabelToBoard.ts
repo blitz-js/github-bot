@@ -1,7 +1,7 @@
 import type {RestEndpointMethodTypes} from "@octokit/rest"
 import type {Issue, PullRequest} from "@octokit/webhooks-definitions/schema"
 import {LABEL_TO_COLUMN} from "../settings"
-import {AnyRepo, parseRepo} from "./helpers"
+import {AnyRepo, ParsedRepo} from "./helpers"
 import log from "./log"
 import octokit from "./octokit"
 
@@ -52,9 +52,11 @@ export async function syncLabelToBoard({
   isPR,
   newLabel,
 }: SyncLabelToBoardArgs) {
-  const repo = parseRepo(repository)
+  const repo = ParsedRepo.fromAnyRepo(repository)
 
-  const {data: projects} = await octokit.projects.listForRepo(repo)
+  const {data: projects} = await octokit.projects.listForRepo({
+    ...repo,
+  })
 
   if (projects.length === 0) {
     log.warn(`Could not find a project board on the repo ${repo}`)
