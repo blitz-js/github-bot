@@ -75,12 +75,9 @@ export const issue_commentCreated = async ({
     }
   }
 
-  if (!(await userInOrg(payload.sender.login))) return
+  if (command === null) return
 
-  if (command === null) {
-    await help(payload)
-    return
-  }
+  if (!(await userInOrg(payload.sender.login))) return
 
   if (addContributorRegex.test(command)) {
     await addContributorManually(payload, command)
