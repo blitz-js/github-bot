@@ -1,48 +1,65 @@
 {
   "name": "blitz-bot",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "automate project board",
-  "author": "dajinchu <dajinchu@gmail.com>",
-  "license": "ISC",
-  "repository": "https://github.com/blitz-js/bot-github",
-  "homepage": "https://github.com/blitz-js/bot-github",
-  "bugs": "https://github.com/blitz-js/bot-github/issues",
-  "keywords": [
-    "probot",
-    "github",
-    "probot-app"
+  "description": "Blitz.js GitHub bot",
+  "contributors": [
+    {
+      "name": "dajinchu",
+      "email": "dajinchu@gmail.com"
+    },
+    {
+      "name": "juanm04",
+      "email": "me@juanm04.com"
+    }
   ],
+  "license": "ISC",
+  "repository": "https://github.com/blitz-js/github-bot",
+  "homepage": "https://github.com/blitz-js/github-bot",
+  "bugs": "https://github.com/blitz-js/github-bot/issues",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage",
     "postinstall": "husky install"
   },
   "dependencies": {
+    "@octokit/rest": "^18.3.5",
+    "@octokit/webhooks": "^8.5.3",
     "all-contributors-cli": "^6.20.0",
     "lodash": "^4.17.21",
-    "probot": "^11.1.0"
+    "log4js": "^6.3.0"
   },
   "devDependencies": {
-    "@tsconfig/node14": "^1.0.0",
+    "@octokit/webhooks-definitions": "^3.62.5",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.168",
-    "@types/nock": "^11.1.0",
-    "@types/node": "^14.14.31",
+    "@types/node": "^14.14.34",
+    "@typescript-eslint/eslint-plugin": "^4.17.0",
+    "@typescript-eslint/parser": "^4.17.0",
     "concurrently": "^6.0.0",
-    "husky": "5.1.2",
+    "dotenv-cli": "^4.0.0",
+    "eslint": "^7.21.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "husky": "5.1.3",
     "jest": "^26.6.3",
-    "nock": "^13.0.9",
+    "lint-staged": "^10.5.4",
+    "nock": "^13.0.11",
     "prettier": "^2.2.1",
     "pretty-quick": "^3.1.0",
     "smee-client": "^1.2.2",
-    "ts-jest": "^26.5.2",
-    "typescript": "^4.2.2"
+    "ts-jest": "^26.5.3",
+    "typescript": "^4.2.3"
   },
   "engines": {
     "node": "14.x"
   },
   "jest": {
     "testEnvironment": "node"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix"
+    ]
   }
 }

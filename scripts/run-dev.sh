@@ -6,4 +6,4 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-yarn concurrently "yarn smee -u $1 --path /api/webhooks" "LOG_LEVEL=debug vercel dev"
+yarn concurrently "yarn smee -u $1 --path /api/webhooks" "dotenv -- vercel dev"
