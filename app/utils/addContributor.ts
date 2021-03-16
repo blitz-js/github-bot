@@ -71,7 +71,9 @@ export async function addContributor({
   )
 
   const oldContributions: string[] =
-    allContributorsSrc.contributors.find((c: any) => c.login === contributor)?.contributions || []
+    allContributorsSrc.contributors.find(
+      (c: any) => c.login.toLowerCase() === contributor.toLowerCase(),
+    )?.contributions || []
   const newContributions = _.difference(contributions, oldContributions)
 
   if (newContributions.length === 0) return
