@@ -44,4 +44,4 @@ export const CONTRIBUTIONS_SETTINGS = {
   defaultBranch: "canary",
 }
 
-export const COMMAND_PREFIXES = ["@blitzjs-bot", "blitzjs-bot", "blitz-bot", "blitz bot"]
+export const COMMAND_PREFIXES = [`@${WHOAMI}`, WHOAMI, "blitz-bot", "blitz bot"]
