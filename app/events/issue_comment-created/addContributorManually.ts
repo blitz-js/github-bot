@@ -11,8 +11,10 @@ export const addContributorRegex = /^add contributor @?[a-zA-Z-_0-9]+ \w+(,? \w+
 export const addContributorManually = async (payload: Payload, command: string) => {
   command = command.substr(16) // legth of "add contributor"
 
+  let mentionContributor = false
   if (command[0] === "@") {
     command = command.substr(1)
+    mentionContributor = true
   }
 
   let [contributor, ...contributions] = command.split(" ")
@@ -22,12 +24,14 @@ export const addContributorManually = async (payload: Payload, command: string) 
 
   if (contributions.length === 0) return
 
-  const contributionMsg = await addContributor({contributor, contributions})
+  let contributionMsg = await addContributor({contributor, contributions})
 
   if (contributionMsg) {
-    log.info(contributionMsg)
-    const repo = ParsedRepo.fromFullRepo(payload.repository)
+    if (!mentionContributor) contributionMsg.replace("@", "")
 
+    log.info(contributionMsg)
+
+    const repo = ParsedRepo.fromFullRepo(payload.repository)
     await octokit.issues.createComment({
       ...repo,
       issue_number: payload.issue.number,
