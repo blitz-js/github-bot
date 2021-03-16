@@ -1,4 +1,5 @@
 import type {IssuesEvent, PullRequestEvent, Repository} from "@octokit/webhooks-definitions/schema"
+import octokit from "./octokit"
 
 export type AnyRepo = Repository | ParsedRepo
 
@@ -26,7 +27,7 @@ export class ParsedRepo {
 }
 
 export const trimMultiLine = (str: string, fixedIdent?: number) => {
-  let lines = str.trim().split("\n")
+  let lines = str.split("\n")
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
@@ -38,8 +39,23 @@ export const trimMultiLine = (str: string, fixedIdent?: number) => {
     }
   }
 
-  return lines.join("\n")
+  return lines.join("\n").trim()
 }
 
 export const payloadIsIssue = (payload: IssuesEvent | PullRequestEvent): payload is IssuesEvent =>
   "issue" in payload
+
+export const sendMessage = ({
+  repo: repo,
+  number,
+  message,
+}: {
+  repo: AnyRepo
+  number: number
+  message: string
+}) =>
+  octokit.issues.createComment({
+    ...ParsedRepo.fromAnyRepo(repo),
+    issue_number: number,
+    body: message,
+  })

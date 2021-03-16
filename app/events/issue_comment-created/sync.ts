@@ -1,12 +1,13 @@
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
 import {LABEL_TO_COLUMN, TRIAGE_LABEL} from "../../settings"
-import {ParsedRepo, trimMultiLine} from "../../utils/helpers"
+import {AnyRepo, ParsedRepo, sendMessage, trimMultiLine} from "../../utils/helpers"
 import octokit from "../../utils/octokit"
 import {syncLabelToBoard} from "../../utils/syncLabelToBoard"
 
 type Payload = EmitterWebhookEvent<"issue_comment.created">["payload"]
 
-const getIssuesToFix = async (repo: ParsedRepo) => {
+const getIssuesToFix = async (repository: AnyRepo) => {
+  const repo = ParsedRepo.fromAnyRepo(repository)
   const res = await octokit.search.issuesAndPullRequests({
     q: ["is:open", "no:project", `repo:${repo}`].join("+"),
   })
@@ -14,9 +15,7 @@ const getIssuesToFix = async (repo: ParsedRepo) => {
 }
 
 export const sync = async (payload: Payload) => {
-  const repo = ParsedRepo.fromFullRepo(payload.repository)
-
-  const issuesToFix = await getIssuesToFix(repo)
+  const issuesToFix = await getIssuesToFix(payload.repository)
 
   let message: string
 
@@ -31,16 +30,15 @@ export const sync = async (payload: Payload) => {
     message = "All open issues are already on the project board."
   }
 
-  await octokit.issues.createComment({
-    ...repo,
-    issue_number: payload.issue.number,
-    body: message,
+  await sendMessage({
+    repo: payload.repository,
+    number: payload.issue.number,
+    message: message,
   })
 }
 
 export const syncConfirm = async (payload: Payload) => {
-  const repo = ParsedRepo.fromFullRepo(payload.repository)
-  const issuesToFix = await getIssuesToFix(repo)
+  const issuesToFix = await getIssuesToFix(payload.repository)
 
   await Promise.all(
     issuesToFix.map((issueToSync) => {
@@ -49,7 +47,7 @@ export const syncConfirm = async (payload: Payload) => {
       const canonicalLabel = statusLabels.pop() || TRIAGE_LABEL
 
       return syncLabelToBoard({
-        repo,
+        repo: payload.repository,
         prOrIssue: issueToSync,
         isPR: false,
         newLabel: canonicalLabel,

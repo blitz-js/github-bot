@@ -1,16 +1,13 @@
 import type {EmitterWebhookEvent} from "@octokit/webhooks"
 import {WHOAMI} from "../../settings"
 import {addContributor} from "../../utils/addContributor"
-import {ParsedRepo} from "../../utils/helpers"
+import {sendMessage} from "../../utils/helpers"
 import log from "../../utils/log"
-import octokit from "../../utils/octokit"
 import {getContributions} from "./getContributions"
 
 export const pull_requestClosed = async ({
   payload: {pull_request, repository},
 }: EmitterWebhookEvent<"pull_request.closed">) => {
-  const repo = ParsedRepo.fromFullRepo(repository)
-
   const isBot = pull_request.user.type.toLowerCase() === "bot" || pull_request.user.login === WHOAMI
   const isTargetDefaultBranch = pull_request.head.repo.default_branch === pull_request.base.ref
   const fileChanged = pull_request.changed_files
@@ -21,7 +18,7 @@ export const pull_requestClosed = async ({
   }
 
   const contributions = await getContributions({
-    repo,
+    repo: repository,
     pr: pull_request.number,
   })
 
@@ -36,10 +33,10 @@ export const pull_requestClosed = async ({
 
   if (contributionMsg) {
     log.info(contributionMsg)
-    await octokit.issues.createComment({
-      ...repo,
-      issue_number: pull_request.number,
-      body: contributionMsg,
+    await sendMessage({
+      repo: repository,
+      number: pull_request.number,
+      message: contributionMsg,
     })
   }
 }
