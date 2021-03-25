@@ -9,13 +9,10 @@ export const pull_requestClosed = async ({
   payload: {pull_request, repository},
 }: EmitterWebhookEvent<"pull_request.closed">) => {
   const isBot = pull_request.user.type.toLowerCase() === "bot" || pull_request.user.login === WHOAMI
-  const isTargetDefaultBranch = pull_request.head.repo.default_branch === pull_request.base.ref
   const fileChanged = pull_request.changed_files
   const wasMerged = pull_request.merged
 
-  if (isBot || !isTargetDefaultBranch || fileChanged === 0 || !wasMerged) {
-    return
-  }
+  if (isBot || fileChanged === 0 || !wasMerged) return
 
   const contributions = await getContributions({
     repo: repository,
