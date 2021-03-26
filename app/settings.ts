@@ -36,7 +36,7 @@ export const LABEL_TO_COLOR: Record<string, string> = {
 export const CONTRIB_TO_FILETYPE: Record<string, string[]> = {
   doc: [".md", ".mdx", ".txt"],
   test: [".test.js", ".test.ts"],
-  code: [".js", ".ts", ".jsx", ".tsx", ".json", ".sh"],
+  code: [".js", ".ts", ".jsx", ".tsx", ".json", ".yml", ".yaml", ".sh"],
 }
 
 export const CONTRIBUTIONS_SETTINGS = {
