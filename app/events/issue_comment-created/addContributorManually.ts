@@ -8,7 +8,7 @@ type Payload = EmitterWebhookEvent<"issue_comment.created">["payload"]
 export const addContributorRegex = /^add contributor @?[a-zA-Z-_0-9]+ \w+(,? \w+)*$/i
 
 export const addContributorManually = async (payload: Payload, command: string) => {
-  command = command.substr(16) // legth of "add contributor"
+  command = command.substr(16) // length of "add contributor"
 
   let mentionContributor = false
   if (command[0] === "@") {
@@ -26,7 +26,7 @@ export const addContributorManually = async (payload: Payload, command: string) 
   let contributionMsg = await addContributor({contributor, contributions})
 
   if (contributionMsg) {
-    if (!mentionContributor) contributionMsg.replace("@", "")
+    if (!mentionContributor) contributionMsg = contributionMsg.replace("@", "")
 
     log.info(contributionMsg)
 
