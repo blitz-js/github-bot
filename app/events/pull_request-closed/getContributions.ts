@@ -2,7 +2,10 @@ import {CONTRIB_TO_FILETYPE} from "../../settings"
 import {AnyRepo, ParsedRepo} from "../../utils/helpers"
 import octokit from "../../utils/octokit"
 
-const isTranslatedRepo = (repoName: string) => /^[a-z-]+\.blitzjs\.com$/.test(repoName)
+const isTranslatedRepo = (repoName: string) => /^[a-z-]+\.blitzjs\.com$/i.test(repoName)
+const isToolsRepo = (repoName: string) => /-bot$/i.test(repoName)
+
+const contribMap = Object.entries(CONTRIB_TO_FILETYPE) as [Contribution, string[]][]
 
 export async function getContributions({
   repo: repository,
@@ -10,10 +13,12 @@ export async function getContributions({
 }: {
   repo: AnyRepo
   pr: number
-}): Promise<string[]> {
+}): Promise<Contribution[]> {
   const repo = ParsedRepo.fromAnyRepo(repository)
 
+  if (repo.repo === "blitzjs.com") return ["doc"]
   if (isTranslatedRepo(repo.repo)) return ["translation"]
+  if (isToolsRepo(repo.repo)) return ["tool"]
 
   const files = await octokit.pulls.listFiles({
     ...repo,
@@ -23,18 +28,60 @@ export async function getContributions({
     per_page: 100,
   })
 
-  const contribMap = Object.entries(CONTRIB_TO_FILETYPE)
-  let contributions: string[] = []
+  let contributions: Contribution[] = []
 
   for (const file of files.data) {
-    contribMap.forEach(([contrib, fileTypes]) => {
-      fileTypes.forEach((fileType) => {
-        if (file.filename.endsWith(fileType) && !contributions.includes(contrib)) {
-          contributions.push(contrib)
-        }
-      })
-    })
+    const contrib = getFileContrib(file.filename)
+
+    if (!contributions.includes(contrib)) {
+      contributions.push(contrib)
+    }
   }
 
   return contributions
 }
+
+const getFileContrib = (filename: string): Contribution => {
+  for (const [contrib, fileTypes] of contribMap) {
+    for (const fileType of fileTypes) {
+      if (filename.endsWith(fileType)) {
+        return contrib
+      }
+    }
+  }
+  return "code"
+}
+
+type Contribution =
+  | "audio"
+  | "a11y"
+  | "bug"
+  | "blog"
+  | "business"
+  | "code"
+  | "content"
+  | "data"
+  | "doc"
+  | "design"
+  | "example"
+  | "eventOrganizing"
+  | "financial"
+  | "fundingFinding"
+  | "ideas"
+  | "infra"
+  | "maintenance"
+  | "mentoring"
+  | "platform"
+  | "plugin"
+  | "projectManagement"
+  | "question"
+  | "research"
+  | "review"
+  | "security"
+  | "tool"
+  | "translation"
+  | "test"
+  | "tutorial"
+  | "talk"
+  | "userTesting"
+  | "video"
