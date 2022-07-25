@@ -40,7 +40,7 @@ export const CONTRIB_TO_FILETYPE: Record<string, string[]> = {
 
 export const CONTRIBUTIONS_SETTINGS = {
   repo: new ParsedRepo("blitz-js", "blitz"),
-  defaultBranch: "canary",
+  defaultBranch: "main",
 }
 
 export const COMMAND_PREFIXES = [`@${WHOAMI}`, WHOAMI, "blitz-bot", "blitz bot"]
