@@ -832,22 +832,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/webhooks-definitions@npm:3.65.2, @octokit/webhooks-definitions@npm:^3.65.2":
+"@octokit/webhooks-definitions@npm:^3.65.2":
   version: 3.65.2
   resolution: "@octokit/webhooks-definitions@npm:3.65.2"
   checksum: f95296c971dbf0f7a11c073e53b4c29f7a2d655bc7954da7e82e6db5c58e6aeaa1f54f1232e71764c242105dda829df399542838bf5ac14b37eeb2f43a85a658
   languageName: node
   linkType: hard
 
-"@octokit/webhooks@npm:^8.7.2":
-  version: 8.7.2
-  resolution: "@octokit/webhooks@npm:8.7.2"
+"@octokit/webhooks-methods@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@octokit/webhooks-methods@npm:2.0.0"
+  checksum: b99e19cb0734e3e0b8354c6c34327f647f189678453771b415ebd6049978444c7f14ad8a6fa5b4885cf34626fb6848d57287bd2b40dce6f3923926cf0f1e49ad
+  languageName: node
+  linkType: hard
+
+"@octokit/webhooks-types@npm:5.8.0":
+  version: 5.8.0
+  resolution: "@octokit/webhooks-types@npm:5.8.0"
+  checksum: f922c2b8d099fe67716cc26da34a135bf55b5738b78cd5a0284138e22e9c353dad5bd7b2daeea78fb7fa1efe20b14bedb5c8038f41a310f993af2507c0687a8e
+  languageName: node
+  linkType: hard
+
+"@octokit/webhooks@npm:^9.26.3":
+  version: 9.26.3
+  resolution: "@octokit/webhooks@npm:9.26.3"
   dependencies:
     "@octokit/request-error": ^2.0.2
-    "@octokit/webhooks-definitions": 3.65.2
+    "@octokit/webhooks-methods": ^2.0.0
+    "@octokit/webhooks-types": 5.8.0
     aggregate-error: ^3.1.0
-    debug: ^4.0.0
-  checksum: c1fcc1064b7fc9e750ef3544682bac009cc2445b3de27da6c086b7df45f986f3566ea92ad829f6f39f0a9478cf753bf29bcbe6760e95c82a60ff0c357a2d0297
+  checksum: 920e0970b580183919095bbc22fed73bebb350838806dabbc76288e3abc0df0830db2dfa88cb5e2d2f6b0ba6a6e46d08c1493daa00d8d1640d6776a3627320f0
   languageName: node
   linkType: hard
 
@@ -2185,7 +2199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^4.0.0, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2.0":
+"debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2.0":
   version: 4.3.2
   resolution: "debug@npm:4.3.2"
   dependencies:
@@ -3227,7 +3241,7 @@ fsevents@^2.1.2:
   resolution: "github-bot@workspace:."
   dependencies:
     "@octokit/rest": ^18.5.0
-    "@octokit/webhooks": ^8.7.2
+    "@octokit/webhooks": ^9.26.3
     "@octokit/webhooks-definitions": ^3.65.2
     "@types/jest": ^26.0.22
     "@types/lodash": ^4.14.168
